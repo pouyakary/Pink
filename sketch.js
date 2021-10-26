@@ -14,6 +14,7 @@ function setup() {
     loadState()
     createCanvas(window.innerWidth, window.innerHeight);
     canvas = document.querySelector("canvas")
+    document.addEventListener('contextmenu', event => event.preventDefault())
 }
 
 function draw() {
@@ -87,13 +88,17 @@ function isShapeUnderCursor(shape) {
 
 function mousePressed() {
     if (focused) {
-        if (eraseMode) {
-            if (somethingIsSelected) {
-                removeSelectedShape( )
-            }
+        if (mouseButton === RIGHT) {
+            eraseMode = !eraseMode
         } else {
-            shapes.push([])
-            shouldAdd = true
+            if (eraseMode) {
+                if (somethingIsSelected) {
+                    removeSelectedShape( )
+                }
+            } else {
+                shapes.push([])
+                shouldAdd = true
+            }
         }
     }
 }
@@ -191,7 +196,7 @@ function toggleEraseDrawMode() {
 
 function applyMode () {
     const button = document.getElementById("mode-button")
-    button.innerText = eraseMode ? "MODE: ERASE" : "MODE: DRAW"
+    button.innerText = eraseMode ? "ERASE MODE" : "DRAW MODE"
 }
 
 function removeSelectedShape() {
