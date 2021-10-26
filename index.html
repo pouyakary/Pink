@@ -10,10 +10,10 @@
 </head>
 <body>
   <div class="buttons-bar">
-    <div class="bar-button" onclick="undoLastShape(); incrementSize()">+</div>
-    <div class="bar-button" onclick="undoLastShape(); decrementSize()">-</div>
-    <div class="bar-button" onclick="undoLastShape(); undoLastShape()">UNDO</div>
-    <div class="bar-button" onclick="reset()">RESET</div>
+    <div class="bar-button" onclick="undoLastShape(); incrementSize()" title="Make the brush heavier">S&uparrow;</div>
+    <div class="bar-button" onclick="undoLastShape(); decrementSize()" title="Make the brush size lighter">S&downarrow;</div>
+    <div class="bar-button" onclick="undoLastShape(); undoLastShape()" title="Undo the last drawn line">UNDO</div>
+    <div class="bar-button" onclick="reset()" title="Clear the whole canvas">RESET</div>
   </div>
   <script src="sketch.js"></script>
 </body>

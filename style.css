@@ -31,14 +31,14 @@ canvas {
 }
 
 .bar-button {
-    font-size:              12pt;
+    font-size:              8pt;
     font-family:            -apple-system, helvetica, arial, sans-serif;
     background-color:       #424242;
     border-radius:          20pt;
-    padding:                5pt 10pt 6pt 10pt;
+    padding:                5pt 9pt 6pt 10pt;
     letter-spacing:         1pt;
     color:                  white;
-    margin-right:           10pt;
+    margin-right:           5pt;
 }
 
 .bar-button:hover {
