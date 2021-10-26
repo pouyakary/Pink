@@ -1,14 +1,16 @@
-var shapes = [[]]
 
+var shapes = [[]]
 var shouldAdd = false
+var strokeSize = 9
 
 function setup() {
+    loadState()
     createCanvas(window.innerWidth, window.innerHeight);
-    strokeWeight(7);
 }
 
 function draw() {
     background(0);
+    strokeWeight(strokeSize);
 
     for (const shape of shapes) {
         let px = 0
@@ -30,8 +32,10 @@ function draw() {
     }
 
     if (keyIsDown(LEFT_ARROW)) {
-        undo();
+        undo()
     }
+
+    saveState()
 }
 
 function mousePressed() {
@@ -49,6 +53,14 @@ function keyTyped() {
     }
     if (key === "2") {
         undoLastShape()
+    }
+    if (key === "3") {
+        strokeSize++
+    }
+    if (key === "4") {
+        if (strokeSize > 1) {
+            strokeSize--
+        }
     }
 }
 
@@ -77,4 +89,16 @@ function undoLastShape() {
 
 function windowResized() {
     resizeCanvas(windowWidth, windowHeight)
+}
+
+
+function saveState() {
+    storeItem("shapes", JSON.stringify(shapes))
+}
+
+function loadState() {
+    const state = getItem("shapes")
+    if (state !== null && state !== undefined && state !== "") {
+        shapes = JSON.parse(state)
+    }
 }
