@@ -1,7 +1,9 @@
 
+const FACTORY_STROKE_SIZE = 9
+
 var shapes = [[]]
 var shouldAdd = false
-var strokeSize = 9
+var strokeSize = FACTORY_STROKE_SIZE
 
 function setup() {
     loadState()
@@ -55,12 +57,10 @@ function keyTyped() {
         undoLastShape()
     }
     if (key === "3") {
-        strokeSize++
+        incrementSize()
     }
     if (key === "4") {
-        if (strokeSize > 1) {
-            strokeSize--
-        }
+        decrementSize()
     }
 }
 
@@ -104,6 +104,17 @@ function loadState() {
 }
 
 function reset() {
+    strokeSize = FACTORY_STROKE_SIZE
     shapes = [[]]
     saveState()
+}
+
+function incrementSize ( ) {
+    strokeSize++
+}
+
+function decrementSize( ) {
+    if (strokeSize > 1) {
+        strokeSize--
+    }
 }
