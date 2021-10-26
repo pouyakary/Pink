@@ -1,4 +1,11 @@
 
+* {
+    user-select:            none;
+    -moz-user-select:       none;
+    -webkit-user-select:    none;
+    -ms-user-select:        none;
+}
+
 body, html {
     margin:                 0;
     padding:                0;
@@ -8,4 +15,37 @@ body, html {
 
 canvas {
     display:    block;
+    cursor:     crosshair;
+}
+
+.buttons-bar {
+    position:           absolute;
+    display:            flex;
+    justify-content:    space-between;
+    z-index:            1000;
+    top:                10pt;
+    top:                calc( env(safe-area-inset-top) + 10pt);
+    right:              10pt;
+    right:              calc( env(safe-area-inset-right) + 10pt );
+    width:              fit-content;
+}
+
+.bar-button {
+    font-size:              12pt;
+    font-family:            -apple-system, helvetica, arial, sans-serif;
+    background-color:       #424242;
+    border-radius:          20pt;
+    padding:                5pt 10pt 6pt 10pt;
+    letter-spacing:         1pt;
+    color:                  white;
+    margin-right:           10pt;
+}
+
+.bar-button:hover {
+    background-color:       #979797;
+    cursor:                 pointer;
+}
+
+.bar-button:active, .bar-button:focus {
+    background-color:       #636363;
 }

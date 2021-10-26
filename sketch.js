@@ -102,3 +102,8 @@ function loadState() {
         shapes = JSON.parse(state)
     }
 }
+
+function reset() {
+    shapes = [[]]
+    saveState()
+}
