@@ -15,7 +15,6 @@ body, html {
 
 canvas {
     display:    block;
-    cursor:     crosshair;
 }
 
 .buttons-bar {
