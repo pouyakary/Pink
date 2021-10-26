@@ -20,7 +20,7 @@ function draw() {
         let isNotFirst = false;
         for (const [x, y] of shape) {
             if (isNotFirst) {
-                stroke(random(255), 0, random(255))
+                decideColor(x, y)
                 line(px, py, x, y)
             }
             px = x
@@ -61,6 +61,15 @@ function keyTyped() {
     }
     if (key === "4") {
         decrementSize()
+    }
+}
+
+function decideColor (x, y) {
+    const l = Math.sqrt(Math.pow((x - mouseX), 2) + Math.pow((y - mouseY), 2))
+    if (l < 50) {
+        stroke(0, random(255), random(100))
+    } else {
+        stroke(random(255), 0, random(255))
     }
 }
 
