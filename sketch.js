@@ -1,36 +1,65 @@
 
 const FACTORY_STROKE_SIZE = 9
+const MOUSE_ERASE_SENSITIVITY = 30
 
 var shapes = [[]]
 var shouldAdd = false
 var strokeSize = FACTORY_STROKE_SIZE
+var eraseMode = false
+var canvas = null
+var selectedShapeIndex = -1
+var somethingIsSelected = false
 
 function setup() {
     loadState()
     createCanvas(window.innerWidth, window.innerHeight);
+    canvas = document.querySelector("canvas")
 }
 
 function draw() {
-    background(0);
-    strokeWeight(strokeSize);
+    applyMode()
+    background(0)
+    strokeWeight(strokeSize)
+
+    somethingIsSelected = false
+    let shapeIndex = 0
 
     for (const shape of shapes) {
+        const shouldAllShapeBeSelected = eraseMode && isShapeUnderCursor(shape)
+        if (shouldAllShapeBeSelected) {
+            somethingIsSelected = true
+            selectedShapeIndex = shapeIndex
+        }
+
         let px = 0
         let py = 0
-        let isNotFirst = false;
+        let isNotFirst = false
+
         for (const [x, y] of shape) {
             if (isNotFirst) {
-                decideColor(x, y)
+                decideColor(x, y, shouldAllShapeBeSelected)
                 line(px, py, x, y)
             }
             px = x
             py = y
             isNotFirst = true
         }
+
+        shapeIndex++
     }
 
-    if (shouldAdd) {
+    canvas.style.cursor = somethingIsSelected ? "pointer" : "crosshair"
+
+    if (!somethingIsSelected) {
+        selectedShapeIndex = -1
+    }
+
+    if (shouldAdd && focused && !eraseMode) {
         addToBuffer(mouseX, mouseY)
+    }
+
+    if (!focused) {
+        shouldAdd = false
     }
 
     if (keyIsDown(LEFT_ARROW)) {
@@ -40,13 +69,39 @@ function draw() {
     saveState()
 }
 
+function isCanvasSelecting(isSelecting) {
+    canvas.style.cursor = isSelecting ? "pointer" : "crosshair"
+}
+
+
+function isShapeUnderCursor(shape) {
+    for (const [x, y] of shape) {
+        const l = Math.sqrt(Math.pow((x - mouseX), 2) + Math.pow((y - mouseY), 2))
+        if (l < MOUSE_ERASE_SENSITIVITY) {
+            return true
+        }
+    }
+    return false
+}
+
+
 function mousePressed() {
-  shapes.push([])
-  shouldAdd = true
+    if (focused) {
+        if (eraseMode) {
+            if (somethingIsSelected) {
+                removeSelectedShape( )
+            }
+        } else {
+            shapes.push([])
+            shouldAdd = true
+        }
+    }
 }
 
 function mouseReleased() {
-  shouldAdd = false
+    if (focused) {
+        shouldAdd = false
+    }
 }
 
 function keyTyped() {
@@ -64,12 +119,14 @@ function keyTyped() {
     }
 }
 
-function decideColor (x, y) {
-    const l = Math.sqrt(Math.pow((x - mouseX), 2) + Math.pow((y - mouseY), 2))
-    if (l < 50) {
-        stroke(0, random(255), random(100))
+function decideColor (x, y, shouldAllShapeBeSelected) {
+    const radius = Math.sqrt(Math.pow((x - mouseX), 2) + Math.pow((y - mouseY), 2))
+    const green = () => stroke(0, random(255), random(100))
+    const pink = () => stroke(random(255), 0, random(255))
+    if (eraseMode) {
+        shouldAllShapeBeSelected ? green( ) : pink( )
     } else {
-        stroke(random(255), 0, random(255))
+        radius < 50 ? green( ) : pink( )
     }
 }
 
@@ -125,5 +182,26 @@ function incrementSize ( ) {
 function decrementSize( ) {
     if (strokeSize > 1) {
         strokeSize--
+    }
+}
+
+function toggleEraseDrawMode() {
+    eraseMode = !eraseMode
+}
+
+function applyMode () {
+    const button = document.getElementById("mode-button")
+    button.innerText = eraseMode ? "MODE: ERASE" : "MODE: DRAW"
+}
+
+function removeSelectedShape() {
+    if (selectedShapeIndex >= 0) {
+        const newShapes = []
+        for (let i = 0; i < shapes.length; i++) {
+            if (i !== selectedShapeIndex) {
+                newShapes.push(shapes[i])
+            }
+        }
+        shapes = newShapes
     }
 }
