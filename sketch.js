@@ -10,7 +10,7 @@
 //
 
     const FACTORY_STROKE_SIZE = 9
-    const MOUSE_ERASE_SENSITIVITY = 30
+    const MOUSE_ERASE_SENSITIVITY = FACTORY_STROKE_SIZE
     const MOUSE_HOVER_SENSITIVITY = 70
     const STORAGE_KEY = "model"
 
@@ -171,7 +171,7 @@
             shapeIndex++
         }
 
-        canvas.style.cursor = somethingIsSelected ? "pointer" : "crosshair"
+        setCursor(somethingIsSelected)
 
         if (!somethingIsSelected) {
             selectedShapeIndex = -1
@@ -257,7 +257,11 @@
 //
 
     function setCursor(isSelecting) {
-        canvas.style.cursor = isSelecting ? "pointer" : "crosshair"
+        if (eraseMode) {
+            canvas.style.cursor = isSelecting ? "pointer" : "default"
+        } else {
+            canvas.style.cursor = "crosshair"
+        }
     }
 
     function decideColor (x, y, shouldAllShapeBeSelected) {
