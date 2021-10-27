@@ -13,7 +13,7 @@
     const MOUSE_ERASE_SENSITIVITY = FACTORY_STROKE_SIZE
     const MOUSE_HOVER_SENSITIVITY = 70
     const LINE_AVERAGING_SENSITIVITY = 7
-    const STORAGE_KEY = "model"
+    const STORAGE_KEY = "pink-board-model"
 
 //
 // ─── GLOBALS ────────────────────────────────────────────────────────────────────
@@ -38,6 +38,7 @@
 
         append(x, y) {
             this.points.push([x, y])
+            this.finalize()
         }
 
         read(index) {
@@ -129,7 +130,6 @@
         }
 
         appendNewEmptyShape() {
-            this.finalizeLastShape()
             this.shapes.push(new Shape())
         }
 
