@@ -12,6 +12,7 @@
     const FACTORY_STROKE_SIZE = 9
     const MOUSE_ERASE_SENSITIVITY = FACTORY_STROKE_SIZE
     const MOUSE_HOVER_SENSITIVITY = 70
+    const LINE_AVERAGING_SENSITIVITY = 7
     const STORAGE_KEY = "model"
 
 //
@@ -49,8 +50,7 @@
 
         get isShapeUnderCursor() {
             for (const [x, y] of this.points) {
-                const l = Math.sqrt(Math.pow((x - mouseX), 2) + Math.pow((y - mouseY), 2))
-                if (l < MOUSE_ERASE_SENSITIVITY) {
+                if (length(x, y, mouseX, mouseY) < MOUSE_ERASE_SENSITIVITY) {
                     return true
                 }
             }
@@ -76,6 +76,40 @@
         removeLastPoint() {
             this.points.pop()
         }
+
+        makeLinesEven() {
+            if (!this.points || this.points.length === 0) {
+                return
+            }
+
+            const newPoints = []
+            let px = 0
+            let py = 0
+            let isFirst = true
+            for (const [x, y] of this.points) {
+                if (isFirst) {
+                    px = x
+                    py = y
+                    isFirst = false
+                    newPoints.push([x, y])
+                } else {
+                    if (length(x, y, px, py) > LINE_AVERAGING_SENSITIVITY) {
+                        newPoints.push([x, y])
+                        px = x
+                        py = y
+                    }
+                }
+            }
+            const last = this.points.pop()
+            if (last) {
+                newPoints.push(last)
+            }
+            this.points = newPoints
+        }
+
+        finalize() {
+            this.makeLinesEven()
+        }
     }
 
 //
@@ -88,7 +122,14 @@
             this.loadPreviousState()
         }
 
-        addEmptyShape() {
+        finalizeLastShape() {
+            if (this.shapes.length > 0) {
+                this.shapes[this.shapes.length - 1].finalize()
+            }
+        }
+
+        appendNewEmptyShape() {
+            this.finalizeLastShape()
             this.shapes.push(new Shape())
         }
 
@@ -97,9 +138,26 @@
         }
 
         loadPreviousState() {
-            const state = getItem(STORAGE_KEY)
-            if (state !== null && state !== undefined && state !== "") {
-                this.shapes = JSON.parse(state).map(raw => new Shape(raw))
+            const state = JSON.parse(getItem(STORAGE_KEY))
+            const shapes = []
+            if (state !== null && state !== undefined && state !== "" && state instanceof Array) {
+                for (const shapeRAW of state) {
+                    if (!shapeRAW instanceof Array) {
+                        return
+                    }
+                    for (const point of shapeRAW) {
+                        if (!point instanceof Array) {
+                            return
+                        }
+                        for (const position of point) {
+                            if (typeof position !== "number") {
+                                return
+                            }
+                        }
+                    }
+                    shapes.push(new Shape(shapeRAW))
+                }
+                this.shapes = shapes
             }
         }
 
@@ -206,7 +264,7 @@
                         model.removeSelectedShape( )
                     }
                 } else {
-                    model.addEmptyShape()
+                    model.appendNewEmptyShape()
                     shouldAdd = true
                 }
             }
@@ -265,7 +323,7 @@
     }
 
     function decideColor (x, y, shouldAllShapeBeSelected) {
-        const radius = Math.sqrt(Math.pow((x - mouseX), 2) + Math.pow((y - mouseY), 2))
+        const radius = length(x, y, mouseX, mouseY)
         const green = () => stroke(0, random(255), random(100))
         const pink = () => stroke(random(255), 0, random(255))
         if (eraseMode) {
@@ -295,6 +353,14 @@
     function reset() {
         strokeSize = FACTORY_STROKE_SIZE
         model.reset()
+    }
+
+//
+// ─── HELPERS ────────────────────────────────────────────────────────────────────
+//
+
+    function length (x1, y1, x2, y2) {
+        return Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2))
     }
 
 // ────────────────────────────────────────────────────────────────────────────────
