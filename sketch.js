@@ -335,7 +335,12 @@
 
     function applyMode() {
         const button = document.getElementById("mode-button")
-        button.innerText = eraseMode ? "ERASE MODE" : "DRAW MODE"
+        button.innerText = eraseMode ? "ERASING MODE 🚨" : "DRAWING MODE ✏️"
+        if ( eraseMode ) {
+            button.classList.add("red")
+        } else {
+            button.classList.remove("red")
+        }
     }
 
 //

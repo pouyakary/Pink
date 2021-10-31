@@ -41,6 +41,10 @@ canvas {
     margin-right:           5pt;
 }
 
+.bar-button.red {
+    background-color:       rgb(116, 0, 0) !important;
+}
+
 .bar-button:hover {
     background-color:       #979797;
     cursor:                 pointer;
