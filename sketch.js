@@ -10,9 +10,9 @@
 //
 
     const FACTORY_STROKE_SIZE = 9
-    const MOUSE_ERASE_SENSITIVITY = FACTORY_STROKE_SIZE
-    const MOUSE_HOVER_SENSITIVITY = 70
     const LINE_AVERAGING_SENSITIVITY = 7
+    const MOUSE_ERASE_SENSITIVITY = LINE_AVERAGING_SENSITIVITY * 2
+    const MOUSE_HOVER_SENSITIVITY = 70
     const STORAGE_KEY = "pink-board-model"
 
 //
@@ -335,7 +335,7 @@
 
     function applyMode() {
         const button = document.getElementById("mode-button")
-        button.innerText = eraseMode ? "ERASING MODE 🚨" : "DRAWING MODE ✏️"
+        button.innerHTML = eraseMode ? "ERASING 🚨" : "DRAWING ✏️"
         if ( eraseMode ) {
             button.classList.add("red")
         } else {
