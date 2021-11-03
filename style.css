@@ -76,3 +76,37 @@ canvas {
 .bar-button:active, .bar-button:focus {
     background-color:       #636363;
 }
+
+#alert-bar {
+    --height-of-alert-bar:
+        4pt;
+    --alert-bar-base-red-color:
+        100;
+
+    position:               fixed;
+    top:                    calc(-2 * var(--height-of-alert-bar));
+    left:                   0;
+    width:                  100vw;
+    height:                 var(--height-of-alert-bar);
+    z-index:                1000;
+    background-color:       red;
+    transition-duration:    1s;
+}
+
+#alert-bar.activated {
+    animation:              alertBarAnimation 1s both infinite;
+    transition-duration:    0.5s;
+    top:                    0;
+}
+
+@keyframes alertBarAnimation {
+    0% {
+        background-color:       rgb(var(--alert-bar-base-red-color), 0, 0);
+    }
+    50% {
+        background-color:       rgb(255, 0, 0);
+    }
+    100% {
+        background-color:       rgb(var(--alert-bar-base-red-color), 0, 0);
+    }
+}

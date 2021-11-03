@@ -26,6 +26,7 @@
     var canvas = null
     var selectedShapeIndex = -1
     var somethingIsSelected = false
+    var frameThatEnteredErase = 0
 
 //
 // ─── SHAPE ──────────────────────────────────────────────────────────────────────
@@ -212,7 +213,7 @@
 
     function draw() {
         applyMode()
-        background(0)
+        colorBackground()
         strokeWeight(strokeSize)
 
         somethingIsSelected = false
@@ -258,6 +259,7 @@
         if (focused) {
             if (mouseButton === RIGHT) {
                 eraseMode = !eraseMode
+                frameThatEnteredErase = frameCount
             } else {
                 if (eraseMode) {
                     if (somethingIsSelected) {
@@ -335,11 +337,21 @@
 
     function applyMode() {
         const button = document.getElementById("mode-button")
+        const alertBar = document.getElementById("alert-bar")
         button.innerHTML = eraseMode ? "ERASING 🚨" : "DRAWING ✏️"
         if ( eraseMode ) {
             button.classList.add("red")
+            alertBar.classList.add("activated")
         } else {
             button.classList.remove("red")
+            alertBar.classList.remove("activated")
+        }
+    }
+
+    function colorBackground() {
+        background(0)
+        if (eraseMode) {
+
         }
     }
 
