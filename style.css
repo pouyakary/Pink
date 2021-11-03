@@ -83,20 +83,22 @@ canvas {
     --alert-bar-base-red-color:
         100;
 
-    position:               fixed;
-    top:                    calc(-2 * var(--height-of-alert-bar));
-    left:                   0;
-    width:                  100vw;
-    height:                 var(--height-of-alert-bar);
-    z-index:                1000;
-    background-color:       red;
-    transition-duration:    1s;
+    position:                       fixed;
+    top:                            calc(-2 * var(--height-of-alert-bar));
+    left:                           0;
+    width:                          100vw;
+    height:                         var(--height-of-alert-bar);
+    z-index:                        1000;
+    background-color:               red;
+    transition-duration:            0.4s;
+    transition-timing-function:     ease-out;
 }
 
 #alert-bar.activated {
-    animation:              alertBarAnimation 1s both infinite;
-    transition-duration:    0.5s;
-    top:                    0;
+    animation:                      alertBarAnimation 0.75s both infinite;
+    transition-duration:            0.2s;
+    transition-timing-function:     ease-in;
+    top:                            0;
 }
 
 @keyframes alertBarAnimation {
