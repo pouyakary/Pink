@@ -112,3 +112,11 @@ canvas {
         background-color:       rgb(var(--alert-bar-base-red-color), 0, 0);
     }
 }
+
+.drawing-cursor {
+    cursor:     url("pen.svg") 6 3, crosshair !important;
+}
+
+.erasing-cursor {
+    cursor:     url("eraser.svg") 7 6, crosshair !important;
+}

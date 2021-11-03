@@ -11,7 +11,7 @@
 
     const FACTORY_STROKE_SIZE = 9
     const LINE_AVERAGING_SENSITIVITY = 7
-    const MOUSE_ERASE_SENSITIVITY = LINE_AVERAGING_SENSITIVITY * 2
+    const MOUSE_ERASE_SENSITIVITY = LINE_AVERAGING_SENSITIVITY
     const MOUSE_HOVER_SENSITIVITY = 70
     const STORAGE_KEY = "pink-board-model"
 
@@ -20,7 +20,7 @@
 //
 
     var model = null
-    var shouldAdd = false
+    var shouldActOnMouseHover = false
     var strokeSize = FACTORY_STROKE_SIZE
     var eraseMode = false
     var canvas = null
@@ -213,7 +213,7 @@
 
     function draw() {
         applyMode()
-        colorBackground()
+        background(0)
         strokeWeight(strokeSize)
 
         somethingIsSelected = false
@@ -236,12 +236,18 @@
             selectedShapeIndex = -1
         }
 
-        if (shouldAdd && focused && !eraseMode) {
-            model.addToBuffer(mouseX, mouseY)
+        if (focused && shouldActOnMouseHover) {
+            if (eraseMode) {
+                if (somethingIsSelected) {
+                    model.removeSelectedShape( )
+                }
+            } else {
+                model.addToBuffer(mouseX, mouseY)
+            }
         }
 
         if (!focused) {
-            shouldAdd = false
+            shouldActOnMouseHover = false
         }
 
         if (keyIsDown(LEFT_ARROW)) {
@@ -261,21 +267,17 @@
                 eraseMode = !eraseMode
                 frameThatEnteredErase = frameCount
             } else {
-                if (eraseMode) {
-                    if (somethingIsSelected) {
-                        model.removeSelectedShape( )
-                    }
-                } else {
+                if (!eraseMode) {
                     model.appendNewEmptyShape()
-                    shouldAdd = true
                 }
+                shouldActOnMouseHover = true
             }
         }
     }
 
     function mouseReleased() {
         if (focused) {
-            shouldAdd = false
+            shouldActOnMouseHover = false
         }
     }
 
@@ -317,10 +319,12 @@
 //
 
     function setCursor(isSelecting) {
+        canvas.classList.remove("drawing-cursor")
+        canvas.classList.remove("erasing-cursor")
         if (eraseMode) {
-            canvas.style.cursor = isSelecting ? "pointer" : "default"
+            canvas.classList.add("erasing-cursor")
         } else {
-            canvas.style.cursor = "crosshair"
+            canvas.classList.add("drawing-cursor")
         }
     }
 
@@ -345,13 +349,6 @@
         } else {
             button.classList.remove("red")
             alertBar.classList.remove("activated")
-        }
-    }
-
-    function colorBackground() {
-        background(0)
-        if (eraseMode) {
-
         }
     }
 
