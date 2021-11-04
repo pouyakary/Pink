@@ -342,7 +342,11 @@
     function applyMode() {
         const button = document.getElementById("mode-button")
         const alertBar = document.getElementById("alert-bar")
-        button.innerHTML = eraseMode ? "ERASING" : "DRAWING"
+        if (shouldActOnMouseHover) {
+            button.innerHTML = eraseMode ? "ERASING" : "DRAWING"
+        } else {
+            button.innerHTML = eraseMode ? "ERASE MODE" : "DRAW MODE"
+        }
         if ( eraseMode ) {
             button.classList.add("red")
             alertBar.classList.add("activated")
