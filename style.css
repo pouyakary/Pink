@@ -11,7 +11,7 @@ body, html {
     padding:                0;
     overflow:               hidden;
     background-color:       black;
-    cursor:                 default;
+    cursor:                 url("pen.svg") 6 3, crosshair !important;
 }
 
 canvas {
@@ -77,6 +77,10 @@ canvas {
     background-color:       #636363;
 }
 
+#mode-button {
+    cursor:     inherit !important;
+}
+
 #alert-bar {
     --height-of-alert-bar:
         4pt;
@@ -114,7 +118,7 @@ canvas {
 }
 
 .drawing-cursor {
-    cursor:     url("pen.svg") 6 3, crosshair !important;
+
 }
 
 .erasing-cursor {
