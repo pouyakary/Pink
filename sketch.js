@@ -14,6 +14,7 @@
     const MOUSE_ERASE_SENSITIVITY = LINE_AVERAGING_SENSITIVITY
     const MOUSE_HOVER_SENSITIVITY = 70
     const STORAGE_KEY = "pink-board-model"
+    const SELECTION_PADDING = 20
 
 //
 // ─── GLOBALS ────────────────────────────────────────────────────────────────────
@@ -50,6 +51,39 @@
             return this.points.length
         }
 
+        computeBoundary() {
+            let minX = Infinity
+            let maxX = -Infinity
+            let minY = Infinity
+            let maxY = -Infinity
+
+            for (const [x, y] of this.points) {
+                if (x > maxX) {
+                    maxX = x
+                }
+                if (x < minX) [
+                    minX = x
+                ]
+                if (y > maxY) {
+                    maxY = y
+                }
+                if (y < minY) {
+                    minY = y
+                }
+            }
+
+            const strokeSizeBoundary = strokeSize - 1
+            const halfOfStrokeBoundary = Math.floor(strokeSizeBoundary / 2)
+            const width = maxX - minX + strokeSizeBoundary
+            const height = maxY - minY + strokeSizeBoundary
+
+            return {
+                x: minX - halfOfStrokeBoundary,
+                y: minY - halfOfStrokeBoundary,
+                width, height
+            }
+        }
+
         get isShapeUnderCursor() {
             for (const [x, y] of this.points) {
                 if (length(x, y, mouseX, mouseY) < MOUSE_ERASE_SENSITIVITY) {
@@ -73,6 +107,20 @@
                 py = y
                 isNotFirst = true
             }
+        }
+
+        drawSelection() {
+            const {x, y, width, height} = this.computeBoundary()
+            strokeWeight(2);
+            stroke(255, 0, 0, 200);
+            fill(0, 0, 0, 0);
+            rect(
+                x - SELECTION_PADDING,
+                y - SELECTION_PADDING,
+                width + SELECTION_PADDING * 2,
+                height + SELECTION_PADDING * 2,
+                SELECTION_PADDING / 2,
+            )
         }
 
         removeLastPoint() {
@@ -234,7 +282,12 @@
 
         if (!somethingIsSelected) {
             selectedShapeIndex = -1
+        } else {
+            if (!shouldActOnMouseHover) {
+                model.shapes[selectedShapeIndex].drawSelection()
+            }
         }
+
 
         if (focused && shouldActOnMouseHover) {
             if (eraseMode) {
@@ -332,8 +385,9 @@
         const radius = length(x, y, mouseX, mouseY)
         const green = () => stroke(0, random(255), random(100))
         const pink = () => stroke(random(255), 0, random(255))
+        const red = () => stroke(random(255), 0, 0)
         if (eraseMode) {
-            shouldAllShapeBeSelected ? green() : pink()
+            shouldAllShapeBeSelected ? red() : pink()
         } else {
             radius < MOUSE_HOVER_SENSITIVITY ? green() : pink()
         }
