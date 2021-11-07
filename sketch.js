@@ -13,10 +13,10 @@
     const LINE_AVERAGING_SENSITIVITY = 7
     const MOUSE_ERASE_SENSITIVITY = LINE_AVERAGING_SENSITIVITY * 1.5
     const MOUSE_HOVER_SENSITIVITY = 70
-    const STORAGE_KEY = "pink-board-model"
+    const STORAGE_KEY = "us.kary.pink.model"
     const SELECTION_PADDING = 20
     const SELECTION_BOX_CORNER_SIZE = 15
-    const SELECTION_STROKE_WEIGHT = 4
+    const SELECTION_BOX_STROKE_WEIGHT = 4
     const DARK_PINK_DELTA = 130
 
 //
@@ -448,7 +448,7 @@
 //
 
     function drawSelectionBox(x, y, width, height) {
-        strokeWeight(SELECTION_STROKE_WEIGHT)
+        strokeWeight(SELECTION_BOX_STROKE_WEIGHT)
         stroke(200, 0, 0)
         fill(0, 0, 0, 0)
 
