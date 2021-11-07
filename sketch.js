@@ -164,6 +164,7 @@
         constructor() {
             this.shapes = []
             this.loadPreviousState()
+            setInterval(() => this.garbageCollect(), 10 * 1000)
         }
 
         finalizeLastShape() {
@@ -215,16 +216,21 @@
             }
         }
 
-        removeSelectedShape() {
-            if (selectedShapeIndex >= 0) {
+        removeShapeAtIndex(index) {
+            const size = this.shapes.length
+            if (index >= 0 && index < size) {
                 const newShapes = []
-                for (let i = 0; i < this.shapes.length; i++) {
-                    if (i !== selectedShapeIndex) {
+                for (let i = 0; i < size; i++) {
+                    if (i !== index) {
                         newShapes.push(this.shapes[i])
                     }
                  }
                 this.shapes = newShapes
             }
+        }
+
+        removeSelectedShape() {
+            this.removeShapeAtIndex(selectedShapeIndex)
         }
 
         undo() {
@@ -237,8 +243,16 @@
         }
 
         reset() {
-            this.shapes = [new Shape()]
+            this.shapes = []
             this.storeCurrentState
+        }
+
+        garbageCollect() {
+            for (let index = 0; index < this.shapes.length; index++) {
+                if (this.shapes[index].size === 0) {
+                    this.removeShapeAtIndex(index)
+                }
+            }
         }
     }
 
