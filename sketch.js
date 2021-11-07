@@ -455,7 +455,7 @@
 
     function drawSelectionBox(x, y, width, height) {
         strokeWeight(SELECTION_STROKE_WEIGHT)
-        stroke(255, 0, 0)
+        stroke(200, 0, 0)
         fill(0, 0, 0, 0)
 
         // top left
