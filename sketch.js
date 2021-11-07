@@ -384,9 +384,16 @@
                 if (shouldAllShapeBeSelected) {
                     stroke(random(155) + 100, 0, 0) // red
                 } else {
-                    stroke(random(255 - DARK_PINK_DELTA), 0, random(255 - DARK_PINK_DELTA)) // dark pin
+                    // this is the disco animation on the darkened pink
+                    if ( Math.random() < 0.0075) {
+                        const c = random(155) + 200
+                        stroke(c, 0, c) // pink
+                    } else {
+                        stroke(random(255 - DARK_PINK_DELTA), 0, random(255 - DARK_PINK_DELTA)) // dark pin
+                    }
                 }
             } else {
+                // normal erase mode
                 stroke(random(255), 0, random(255)) // pink
             }
         } else {
