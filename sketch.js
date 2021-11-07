@@ -164,7 +164,7 @@
         constructor() {
             this.shapes = []
             this.loadPreviousState()
-            setInterval(() => this.garbageCollect(), 10 * 1000)
+            setInterval(() => this.garbageCollect(), 1000)
         }
 
         finalizeLastShape() {
@@ -249,7 +249,7 @@
 
         garbageCollect() {
             for (let index = 0; index < this.shapes.length; index++) {
-                if (this.shapes[index].size === 0) {
+                if (this.shapes[index].size < 2) {
                     this.removeShapeAtIndex(index)
                 }
             }
