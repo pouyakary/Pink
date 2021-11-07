@@ -16,6 +16,7 @@
     const STORAGE_KEY = "pink-board-model"
     const SELECTION_PADDING = 20
     const SELECTION_BOX_CORNER_SIZE = 15
+    const SELECTION_STROKE_WEIGHT = 4
     const DARK_PINK_DELTA = 130
 
 //
@@ -416,10 +417,10 @@
         }
         if ( eraseMode ) {
             button.classList.add("red")
-            alertBar.classList.add("activated")
+            // alertBar.classList.add("activated")
         } else {
             button.classList.remove("red")
-            alertBar.classList.remove("activated")
+            // alertBar.classList.remove("activated")
         }
     }
 
@@ -453,7 +454,7 @@
 //
 
     function drawSelectionBox(x, y, width, height) {
-        strokeWeight(4)
+        strokeWeight(SELECTION_STROKE_WEIGHT)
         stroke(255, 0, 0)
         fill(0, 0, 0, 0)
 
