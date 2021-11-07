@@ -11,10 +11,12 @@
 
     const FACTORY_STROKE_SIZE = 9
     const LINE_AVERAGING_SENSITIVITY = 7
-    const MOUSE_ERASE_SENSITIVITY = LINE_AVERAGING_SENSITIVITY
+    const MOUSE_ERASE_SENSITIVITY = LINE_AVERAGING_SENSITIVITY * 1.5
     const MOUSE_HOVER_SENSITIVITY = 70
     const STORAGE_KEY = "pink-board-model"
     const SELECTION_PADDING = 20
+    const SELECTION_BOX_CORNER_SIZE = 15
+    const DARK_PINK_DELTA = 130
 
 //
 // ─── GLOBALS ────────────────────────────────────────────────────────────────────
@@ -111,16 +113,7 @@
 
         drawSelection() {
             const {x, y, width, height} = this.computeBoundary()
-            strokeWeight(2);
-            stroke(255, 0, 0, 200);
-            fill(0, 0, 0, 0);
-            rect(
-                x - SELECTION_PADDING,
-                y - SELECTION_PADDING,
-                width + SELECTION_PADDING * 2,
-                height + SELECTION_PADDING * 2,
-                SELECTION_PADDING / 2,
-            )
+            drawSelectionBox(x, y, width, height)
         }
 
         removeLastPoint() {
@@ -273,12 +266,16 @@
                 somethingIsSelected = true
                 selectedShapeIndex = shapeIndex
             }
-
-            shape.draw(shouldAllShapeBeSelected)
             shapeIndex++
         }
 
-        setCursor(somethingIsSelected)
+        shapeIndex = 0
+        for (const shape of model.shapes) {
+            shape.draw(shapeIndex === selectedShapeIndex)
+            shapeIndex++
+        }
+
+        setCursor()
 
         if (!somethingIsSelected) {
             selectedShapeIndex = -1
@@ -371,7 +368,7 @@
 // ─── DRAW HELPERS ───────────────────────────────────────────────────────────────
 //
 
-    function setCursor(isSelecting) {
+    function setCursor() {
         canvas.classList.remove("drawing-cursor")
         canvas.classList.remove("erasing-cursor")
         if (eraseMode) {
@@ -382,14 +379,23 @@
     }
 
     function decideColor (x, y, shouldAllShapeBeSelected) {
-        const radius = length(x, y, mouseX, mouseY)
-        const green = () => stroke(0, random(255), random(100))
-        const pink = () => stroke(random(255), 0, random(255))
-        const red = () => stroke(random(255), 0, 0)
         if (eraseMode) {
-            shouldAllShapeBeSelected ? red() : pink()
+            if (somethingIsSelected) {
+                if (shouldAllShapeBeSelected) {
+                    stroke(random(155) + 100, 0, 0) // red
+                } else {
+                    stroke(random(255 - DARK_PINK_DELTA), 0, random(255 - DARK_PINK_DELTA)) // dark pin
+                }
+            } else {
+                stroke(random(255), 0, random(255)) // pink
+            }
         } else {
-            radius < MOUSE_HOVER_SENSITIVITY ? green() : pink()
+            const radius = length(x, y, mouseX, mouseY)
+            if (radius < MOUSE_HOVER_SENSITIVITY) {
+                stroke(0, random(255), random(100)) // green
+            } else {
+                stroke(random(255), 0, random(255)) // pink
+            }
         }
     }
 
@@ -433,6 +439,40 @@
 
     function length (x1, y1, x2, y2) {
         return Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2))
+    }
+
+//
+// ─── DRAWING HELPERS ────────────────────────────────────────────────────────────
+//
+
+    function drawSelectionBox(x, y, width, height) {
+        strokeWeight(4)
+        stroke(255, 0, 0)
+        fill(0, 0, 0, 0)
+
+        // top left
+        const topLeftX = x - SELECTION_PADDING
+        const topLeftY = y - SELECTION_PADDING
+        line(topLeftX, topLeftY, topLeftX + SELECTION_BOX_CORNER_SIZE, topLeftY)
+        line(topLeftX, topLeftY, topLeftX, topLeftY + SELECTION_BOX_CORNER_SIZE)
+
+        // top right
+        const topRightX = topLeftX + 2 * SELECTION_PADDING + width
+        const topRightY = topLeftY
+        line(topRightX - SELECTION_BOX_CORNER_SIZE, topRightY, topRightX, topRightY)
+        line(topRightX, topRightY, topRightX, topRightY + SELECTION_BOX_CORNER_SIZE)
+
+        // bottom left
+        const bottomLeftX = topLeftX
+        const bottomLeftY = topLeftY + 2 * SELECTION_PADDING + height
+        line(bottomLeftX, bottomLeftY, bottomLeftX + SELECTION_BOX_CORNER_SIZE, bottomLeftY)
+        line(bottomLeftX, bottomLeftY - SELECTION_BOX_CORNER_SIZE, bottomLeftX, bottomLeftY)
+
+        // bottom right
+        const bottomRightX = topRightX
+        const bottomRightY = bottomLeftY
+        line(bottomRightX, bottomRightY, bottomRightX - SELECTION_BOX_CORNER_SIZE, bottomRightY)
+        line(bottomRightX, bottomRightY - SELECTION_BOX_CORNER_SIZE, bottomRightX, bottomRightY)
     }
 
 // ────────────────────────────────────────────────────────────────────────────────
