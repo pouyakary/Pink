@@ -31,6 +31,8 @@
     var selectedShapeIndex = -1
     var somethingIsSelected = false
     var frameThatEnteredErase = 0
+    var htmlSectionIsActive = false
+    var helpPageIsOpen = false
 
 //
 // ─── SHAPE ──────────────────────────────────────────────────────────────────────
@@ -167,6 +169,10 @@
             setInterval(() => this.garbageCollect(), 1000)
         }
 
+        get size() {
+            return this.shapes.length
+        }
+
         finalizeLastShape() {
             if (this.shapes.length > 0) {
                 this.shapes[this.shapes.length - 1].finalize()
@@ -264,10 +270,18 @@
         model = new Model()
         createCanvas(window.innerWidth, window.innerHeight);
         canvas = document.querySelector("canvas")
-        document.addEventListener('contextmenu', event => event.preventDefault())
+        registerEvents()
     }
 
+    function registerEvents() {
+        const disable = event => event.preventDefault()
+        document.addEventListener("contextmenu", disable)
+        document.addEventListener("click", disable)
+    }
+
+
     function draw() {
+        renderHelpPageBasedOnState()
         applyMode()
         background(0)
         strokeWeight(strokeSize)
@@ -301,7 +315,7 @@
         }
 
 
-        if (focused && shouldActOnMouseHover) {
+        if (!shouldNotHandleTheMouse() && shouldActOnMouseHover) {
             if (eraseMode) {
                 if (somethingIsSelected) {
                     model.removeSelectedShape( )
@@ -326,24 +340,31 @@
 // ─── EVENTS ─────────────────────────────────────────────────────────────────────
 //
 
+    function shouldNotHandleTheMouse() {
+        return htmlSectionIsActive || !focused || helpPageIsOpen
+    }
+
     function mousePressed() {
-        if (focused) {
-            if (mouseButton === RIGHT) {
-                eraseMode = !eraseMode
-                frameThatEnteredErase = frameCount
-            } else {
-                if (!eraseMode) {
-                    model.appendNewEmptyShape()
-                }
-                shouldActOnMouseHover = true
+        if (shouldNotHandleTheMouse()) {
+            return
+        }
+
+        if (mouseButton === RIGHT) {
+            toggleEraseDrawMode()
+        } else {
+            if (!eraseMode) {
+                model.appendNewEmptyShape()
             }
+            shouldActOnMouseHover = true
         }
     }
 
     function mouseReleased() {
-        if (focused) {
-            shouldActOnMouseHover = false
+        if (shouldNotHandleTheMouse()) {
+            return
         }
+
+        shouldActOnMouseHover = false
     }
 
     function keyTyped() {
@@ -416,8 +437,7 @@
     }
 
     function applyMode() {
-        const button = document.getElementById("mode-button")
-        const alertBar = document.getElementById("alert-bar")
+        const button = document.getElementById("status")
         if (shouldActOnMouseHover) {
             button.innerHTML = eraseMode ? "ERASING" : "DRAWING"
         } else {
@@ -425,10 +445,8 @@
         }
         if ( eraseMode ) {
             button.classList.add("red")
-            // alertBar.classList.add("activated")
         } else {
             button.classList.remove("red")
-            // alertBar.classList.remove("activated")
         }
     }
 
@@ -445,9 +463,12 @@
     }
 
     function reset() {
-        strokeSize = FACTORY_STROKE_SIZE
-        model.reset()
+        if (confirm('🧨 Are you sure about cleaning all the screen?')) {
+            strokeSize = FACTORY_STROKE_SIZE
+            model.reset()
+        }
     }
+
 
 //
 // ─── HELPERS ────────────────────────────────────────────────────────────────────
@@ -455,6 +476,14 @@
 
     function length (x1, y1, x2, y2) {
         return Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2))
+    }
+
+    function handleClick(func) {
+        setTimeout(() => func())
+    }
+
+    function renderHelpPageBasedOnState() {
+        document.getElementById("help-screen").hidden = !helpPageIsOpen
     }
 
 //

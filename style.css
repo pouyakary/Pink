@@ -12,6 +12,7 @@ body, html {
     overflow:               hidden;
     background-color:       black;
     cursor:                 url("pen.svg") 6 3, crosshair !important;
+    font-family:            -apple-system, helvetica, arial, sans-serif;
 }
 
 canvas {
@@ -36,7 +37,6 @@ canvas {
 
     font-size:              8pt;
     box-sizing:             border-box;
-    font-family:            -apple-system, helvetica, arial, sans-serif;
     background-color:       #424242;
     border-radius:          var(--button-height);
     padding:                5pt 9pt 6pt 10pt;
@@ -77,8 +77,9 @@ canvas {
     background-color:       #636363;
 }
 
-#mode-button {
-    cursor:     inherit !important;
+#status {
+    background-color:       black;
+    cursor:                 inherit !important;
 }
 
 #alert-bar {
@@ -123,4 +124,28 @@ canvas {
 
 .erasing-cursor {
     cursor:     url("eraser.svg") 7 6, crosshair !important;
+}
+
+#help-screen {
+    background-color:       rgba(0, 0, 0, 0.7);
+    width:                  100vw;
+    height:                 100vh;
+    z-index:                2000;
+    position:               fixed;
+    left:                   0;
+    top:                    0;
+    overflow:               hidden;
+    color:                  red;
+    cursor:                 pointer;
+}
+
+#help-screen * {
+    margin:             auto;
+    margin-top:         40vh;
+    line-height:        1.5;
+    color:              white;
+    border:             1.5pt solid white;
+    border-radius:      20pt;
+    padding:            10pt 30pt 12pt 30pt;
+    max-width:          fit-content;
 }

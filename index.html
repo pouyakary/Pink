@@ -36,15 +36,24 @@
   <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
-  <div class="buttons-bar">
-    <div id="mode-button" class="bar-button" style="background-color: black;"></div>
-    <div class="bar-button" onclick="undoLastShape(); incrementSize()" title="Make the brush heavier">S&uparrow;</div>
-    <div class="bar-button" onclick="undoLastShape(); decrementSize()" title="Make the brush size lighter">S&downarrow;</div>
-    <div class="bar-button" onclick="undoLastShape(); undoLastShape()" title="Undo the last drawn line">UNDO</div>
-    <div class="bar-button" onclick="reset()" title="Clear the whole canvas">RESET</div>
+  <div class="buttons-bar" onmouseover="htmlSectionIsActive = true" onmouseout="htmlSectionIsActive = false">
+    <div id="status" class="bar-button"></div>
+    <!-- div class="bar-button" onclick="undoLastShape(); incrementSize()" title="Make the brush heavier">S&uparrow;</div -->
+    <!-- div class="bar-button" onclick="undoLastShape(); decrementSize()" title="Make the brush size lighter">S&downarrow;</div -->
+    <div class="bar-button" onclick="handleClick(undoLastShape)" title="Undo the last drawn line">UNDO</div>
+    <div class="bar-button" onclick="handleClick(reset)" title="Clear the whole canvas">RESET</div>
+    <div class="bar-button" onclick="helpPageIsOpen = true" title="Learn about the hidden tools">?</div>
   </div>
 
   <div id="alert-bar" class=""></div>
+  <div id="help-screen" hidden=true onclick="helpPageIsOpen = false">
+    <div>
+      HIDDEN TOOLS<br>
+      &rightarrow; Use your mouse to either draw or erase.<br>
+      &rightarrow; Use the right click to switch between pen and eraser.<br>
+      &rightarrow; Use the Left Arrow button (&leftarrow;) to undo slowly.
+    </div>
+  </div>
   <script src="sketch.js"></script>
 </body>
 </html>
