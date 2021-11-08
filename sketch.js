@@ -367,21 +367,6 @@
         shouldActOnMouseHover = false
     }
 
-    function keyTyped() {
-        if (key === "1") {
-            undo()
-        }
-        if (key === "2") {
-            undoLastShape()
-        }
-        if (key === "3") {
-            incrementSize()
-        }
-        if (key === "4") {
-            decrementSize()
-        }
-    }
-
     function windowResized() {
         resizeCanvas(windowWidth, windowHeight)
     }
