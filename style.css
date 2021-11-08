@@ -127,7 +127,7 @@ canvas {
 }
 
 #help-screen {
-    background-color:       rgba(0, 0, 0, 0.7);
+    background-color:       rgba(0, 0, 0, 0.8);
     width:                  100vw;
     height:                 100vh;
     z-index:                2000;
@@ -145,6 +145,7 @@ canvas {
     line-height:        1.5;
     color:              white;
     border:             1.5pt solid white;
+    background:         black;
     border-radius:      20pt;
     padding:            10pt 30pt 12pt 30pt;
     max-width:          fit-content;
