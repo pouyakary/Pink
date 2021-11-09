@@ -10,7 +10,7 @@ body, html {
     margin:                 0;
     padding:                0;
     overflow:               hidden;
-    background-color:       black;
+    background-color:       rgb(235, 242, 255);
     font-family:            -apple-system, helvetica, arial, sans-serif;
 }
 
@@ -36,7 +36,8 @@ canvas {
 
     font-size:              8pt;
     box-sizing:             border-box;
-    background-color:       #424242;
+    background-color:       rgb(104, 117, 140);
+    color:                  white;
     border-radius:          var(--button-height);
     padding:                5pt 9pt 6pt 10pt;
     height:                 var(--button-height);
@@ -44,21 +45,29 @@ canvas {
     min-height:             var(--button-height);
     overflow:               hidden;
     letter-spacing:         1pt;
-    color:                  white;
     margin-right:           5pt;
 }
 
 .bar-button.red {
-    background-color:               #740000 !important;
-    color:                          #ffe0e0 !important;
-    background-image:               url("erasing.png");
-    background-size:                contain;
-    background-position:            left center;
-    animation:                      alertAnimation 0.5s forwards infinite;
+    background-color:               red !important;
+    color:                          white !important;
+    animation:                      lightAlertAnimation 1s forwards infinite;
     animation-timing-function:      linear;
 }
 
-@keyframes alertAnimation {
+@keyframes lightAlertAnimation {
+    0% {
+        background-color:       rgb(220, 0, 0);
+    }
+    50% {
+        background-color:       rgb(140, 0, 0);
+    }
+    100% {
+        background-color:       rgb(220, 0, 0);
+    }
+}
+
+@keyframes darkAlertAnimation {
     from {
         background-position-x:      0;
     }
@@ -68,17 +77,19 @@ canvas {
 }
 
 .bar-button:hover {
-    background-color:       #979797;
+    background-color:       black;
+    color:                  white;
     cursor:                 pointer;
 }
 
 .bar-button:active, .bar-button:focus {
-    background-color:       #636363;
+    background-color:       rgb(78, 78, 78);
 }
 
 #status {
-    background-color:       black;
+    background-color:       inherit;
     cursor:                 inherit !important;
+    color:                  black;
 }
 
 .drawing-cursor {
@@ -94,7 +105,7 @@ canvas {
 }
 
 #help-screen {
-    background-color:       black;
+    background-color:       inherit;
     width:                  100vw;
     height:                 100vh;
     z-index:                2000;
@@ -107,10 +118,50 @@ canvas {
 }
 
 #help-screen div {
-    margin:         auto;
-    margin-top:     30vh;
-    line-height:    1.5;
-    color:          white;
-    background:     black;
-    max-width:      fit-content;
+    margin:                 auto;
+    margin-top:             30vh;
+    line-height:            1.5;
+    color:                  white;
+    background-color:       rgb(104, 117, 140);
+    padding:                20pt;
+    border-radius:          10pt;
+    max-width:              fit-content;
+}
+
+@media (prefers-color-scheme: dark) {
+    .bar-button {
+        background-color:       #424242;
+        color:                  white;
+    }
+
+    #status {
+        color:      white;
+    }
+
+    .bar-button:hover {
+        background-color:       #979797;
+        cursor:                 pointer;
+    }
+
+    .bar-button:active, .bar-button:focus {
+        background-color:       #636363;
+    }
+
+    body, html {
+        background-color:       black;
+    }
+
+    .bar-button.red {
+        background-color:               #740000 !important;
+        color:                          #ffe0e0 !important;
+        background-image:               url("erasing.png");
+        background-size:                contain;
+        background-position:            left center;
+        animation:                      darkAlertAnimation 0.5s forwards infinite;
+        animation-timing-function:      linear;
+    }
+
+    #help-screen div {
+        background-color:       black;
+    }
 }

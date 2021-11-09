@@ -19,6 +19,7 @@
     const SELECTION_BOX_CORNER_SIZE = 15
     const SELECTION_BOX_STROKE_WEIGHT = 4
     const DARK_PINK_DELTA = 130
+    const LIGHT_PINK_BASE = 120
 
 //
 // ─── GLOBALS ────────────────────────────────────────────────────────────────────
@@ -38,6 +39,8 @@
     var lockButton = undefined
     var undoButton = undefined
     var resetButton = undefined
+    var darkMode = false
+    var pinkBase = 0
 
 //
 // ─── SHAPE ──────────────────────────────────────────────────────────────────────
@@ -121,7 +124,9 @@
 
         drawSelection() {
             const {x, y, width, height} = this.computeBoundary()
-            drawSelectionBox(x, y, width, height)
+            if (darkMode) {
+                drawSelectionBox(x, y, width, height)
+            }
         }
 
         removeLastPoint() {
@@ -299,9 +304,11 @@
 
 
     function draw() {
+        darkMode = isTheSystemOnDarkMode()
+
         renderHelpPageBasedOnState()
         applyMode()
-        background(0)
+        setAppearanceColors()
         strokeWeight(FACTORY_STROKE_SIZE)
 
         somethingIsSelected = false
@@ -429,20 +436,24 @@
         if (eraseMode) {
             if (somethingIsSelected) {
                 if (shouldAllShapeBeSelected) {
-                    stroke(random(155) + 100, 0, 0) // red
+                    stroke(random(155) + 100 + pinkBase * 0.4, 0, 0) // red
                 } else {
-                    stroke(random(255 - DARK_PINK_DELTA), 0, random(255 - DARK_PINK_DELTA)) // dark pin
+                    if (darkMode) {
+                        stroke(random(255 - DARK_PINK_DELTA), 0, random(255 - DARK_PINK_DELTA)) // dark pin
+                    } else {
+                        stroke(171, 188, 219)
+                    }
                 }
             } else {
                 // normal erase mode
-                stroke(random(255), 0, random(255)) // pink
+                stroke(pinkBase + random(255 - pinkBase), 0, pinkBase + random(255 - pinkBase)) // pink
             }
         } else {
             const radius = length(x, y, mouseX, mouseY)
             if (radius < MOUSE_HOVER_SENSITIVITY) {
-                stroke(0, random(255), random(100)) // green
+                stroke(0, pinkBase + random(255 - pinkBase), pinkBase + random(100 - pinkBase)) // green
             } else {
-                stroke(random(255), 0, random(255)) // pink
+                stroke(pinkBase + random(255 - pinkBase), 0, pinkBase + random(255 - pinkBase)) // pink
             }
         }
     }
@@ -463,6 +474,16 @@
             } else {
                 statusView.classList.remove("red")
             }
+        }
+    }
+
+    function setAppearanceColors() {
+        if (darkMode) {
+            background(0)
+            pinkBase = 0
+        } else {
+            background(235, 242, 255)
+            pinkBase = LIGHT_PINK_BASE
         }
     }
 
@@ -500,6 +521,14 @@
         document.getElementById("help-screen").hidden = !helpPageIsOpen
     }
 
+    function isTheSystemOnDarkMode() {
+        const query = window.matchMedia("(prefers-color-scheme: dark)")
+        if (query) {
+            return query.matches
+        }
+        return false
+    }
+
     function loadLockFromState() {
         try {
             const lockState = getItem(LOCK_KEY)
@@ -535,7 +564,7 @@
 
     function drawSelectionBox(x, y, width, height) {
         strokeWeight(SELECTION_BOX_STROKE_WEIGHT)
-        stroke(200, 0, 0)
+        stroke(200 + (darkMode ? 0 : 30), 0, 0)
         fill(0, 0, 0, 0)
 
         // top left
