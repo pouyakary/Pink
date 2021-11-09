@@ -512,12 +512,17 @@
     }
 
     function toggleLock() {
-        locked = !locked
-        storeItem(LOCK_KEY, JSON.stringify(locked))
-        setLockButtonText()
         if (locked) {
+            if (confirm("🧨 Are you sure about unlocking?")) {
+                locked = false
+            }
+        } else {
+            locked = true
             eraseMode = false
         }
+
+        storeItem(LOCK_KEY, JSON.stringify(locked))
+        setLockButtonText()
     }
 
 //
