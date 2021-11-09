@@ -451,7 +451,12 @@
         } else {
             const radius = length(x, y, mouseX, mouseY)
             if (radius < MOUSE_HOVER_SENSITIVITY) {
-                stroke(0, pinkBase + random(255 - pinkBase), pinkBase + random(100 - pinkBase)) // green
+                if (darkMode) {
+                    stroke(0, random(255), random(100)) // green
+                } else {
+                    const base = random(150)
+                    stroke(base, base, base + 155 + random(150 - base)) // blue
+                }
             } else {
                 stroke(pinkBase + random(255 - pinkBase), 0, pinkBase + random(255 - pinkBase)) // pink
             }
