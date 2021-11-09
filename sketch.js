@@ -340,22 +340,24 @@
         }
 
 
-        if (!shouldNotHandleTheMouse() && shouldActOnMouseHover) {
-            if (eraseMode) {
-                if (somethingIsSelected) {
-                    model.removeSelectedShape( )
+        if (!shouldNotHandleTheMouse()) {
+            if (shouldActOnMouseHover) {
+                if (eraseMode) {
+                    if (somethingIsSelected) {
+                        model.removeSelectedShape( )
+                    }
+                } else {
+                    model.addToBuffer(mouseX, mouseY)
                 }
-            } else {
-                model.addToBuffer(mouseX, mouseY)
+            }
+
+            if (keyIsDown(LEFT_ARROW)) {
+                model.undo()
             }
         }
 
         if (!focused) {
             shouldActOnMouseHover = false
-        }
-
-        if (keyIsDown(LEFT_ARROW)) {
-            model.undo()
         }
 
         model.storeCurrentState()
