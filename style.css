@@ -81,42 +81,6 @@ canvas {
     cursor:                 inherit !important;
 }
 
-#alert-bar {
-    --height-of-alert-bar:
-        4pt;
-    --alert-bar-base-red-color:
-        100;
-
-    position:                       fixed;
-    top:                            calc(-2 * var(--height-of-alert-bar));
-    left:                           0;
-    width:                          100vw;
-    height:                         var(--height-of-alert-bar);
-    z-index:                        1000;
-    background-color:               red;
-    transition-duration:            0.4s;
-    transition-timing-function:     ease-out;
-}
-
-#alert-bar.activated {
-    animation:                      alertBarAnimation 0.75s both infinite;
-    transition-duration:            0.2s;
-    transition-timing-function:     ease-in;
-    top:                            0;
-}
-
-@keyframes alertBarAnimation {
-    0% {
-        background-color:       rgb(var(--alert-bar-base-red-color), 0, 0);
-    }
-    50% {
-        background-color:       rgb(255, 0, 0);
-    }
-    100% {
-        background-color:       rgb(var(--alert-bar-base-red-color), 0, 0);
-    }
-}
-
 .drawing-cursor {
     cursor:     url("pen.svg") 6 3, crosshair !important;
 }

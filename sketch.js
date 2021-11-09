@@ -26,7 +26,6 @@
 
     var model = null
     var shouldActOnMouseHover = false
-    var strokeSize = FACTORY_STROKE_SIZE
     var eraseMode = false
     var canvas = null
     var selectedShapeIndex = -1
@@ -83,7 +82,7 @@
                 }
             }
 
-            const strokeSizeBoundary = strokeSize - 1
+            const strokeSizeBoundary = FACTORY_STROKE_SIZE - 1
             const halfOfStrokeBoundary = Math.floor(strokeSizeBoundary / 2)
             const width = maxX - minX + strokeSizeBoundary
             const height = maxY - minY + strokeSizeBoundary
@@ -303,7 +302,7 @@
         renderHelpPageBasedOnState()
         applyMode()
         background(0)
-        strokeWeight(strokeSize)
+        strokeWeight(FACTORY_STROKE_SIZE)
 
         somethingIsSelected = false
         let shapeIndex = 0
@@ -481,7 +480,6 @@
 
     function reset() {
         if (confirm('🧨 Are you sure about cleaning all the screen?')) {
-            strokeSize = FACTORY_STROKE_SIZE
             model.reset()
         }
     }
