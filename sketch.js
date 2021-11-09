@@ -19,7 +19,7 @@
     const SELECTION_BOX_CORNER_SIZE = 15
     const SELECTION_BOX_STROKE_WEIGHT = 4
     const DARK_PINK_DELTA = 130
-    const LIGHT_PINK_BASE = 160
+    const LIGHT_PINK_BASE = 145
 
 //
 // ─── GLOBALS ────────────────────────────────────────────────────────────────────
