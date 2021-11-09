@@ -37,6 +37,8 @@
     var locked = false
     var status = undefined
     var lockButton = undefined
+    var undoButton = undefined
+    var resetButton = undefined
 
 //
 // ─── SHAPE ──────────────────────────────────────────────────────────────────────
@@ -276,7 +278,9 @@
 
         statusView = document.getElementById("status")
         lockButton = document.getElementById("lock-button")
-        setLockButtonText()
+        undoButton = document.getElementById("undo-button")
+        resetButton = document.getElementById("reset-button")
+        applyLockChangeEffects()
         createCanvas(window.innerWidth, window.innerHeight);
         canvas = document.querySelector("canvas")
 
@@ -392,8 +396,10 @@
         eraseMode = !eraseMode
     }
 
-    function setLockButtonText() {
+    function applyLockChangeEffects() {
         lockButton.innerText = locked ? "UNLOCK" : "LOCK"
+        undoButton.hidden = locked
+        resetButton.hidden = locked
     }
 
 //
@@ -522,7 +528,7 @@
         }
 
         storeItem(LOCK_KEY, JSON.stringify(locked))
-        setLockButtonText()
+        applyLockChangeEffects()
     }
 
 //
