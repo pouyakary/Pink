@@ -105,7 +105,7 @@ canvas {
 }
 
 #help-screen {
-    background-color:       inherit;
+    background-color:       rgb(104, 117, 140);
     width:                  100vw;
     height:                 100vh;
     z-index:                2000;
@@ -118,14 +118,13 @@ canvas {
 }
 
 #help-screen div {
-    margin:                 auto;
-    margin-top:             30vh;
-    line-height:            1.5;
-    color:                  white;
-    background-color:       rgb(104, 117, 140);
-    padding:                20pt;
-    border-radius:          10pt;
-    max-width:              fit-content;
+    margin:             auto;
+    margin-top:         30vh;
+    line-height:        1.5;
+    color:              white;
+    padding:            10pt;
+    border-radius:      10pt;
+    max-width:          fit-content;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -161,7 +160,7 @@ canvas {
         animation-timing-function:      linear;
     }
 
-    #help-screen div {
-        background-color:       black;
+    #help-screen {
+        background:     black;
     }
 }
