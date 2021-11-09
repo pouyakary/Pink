@@ -40,6 +40,7 @@
     <div id="status" class="bar-button"></div>
     <!-- div class="bar-button" onclick="undoLastShape(); incrementSize()" title="Make the brush heavier">S&uparrow;</div -->
     <!-- div class="bar-button" onclick="undoLastShape(); decrementSize()" title="Make the brush size lighter">S&downarrow;</div -->
+    <div id="lock-button" class="bar-button" onclick="handleClick(toggleLock)" title="Toggle Lock">LOCK</div>
     <div class="bar-button" onclick="handleClick(undoLastShape)" title="Undo the last drawn line">UNDO</div>
     <div class="bar-button" onclick="handleClick(reset)" title="Clear the whole canvas">RESET</div>
     <div class="bar-button" onclick="helpPageIsOpen = true" title="Learn about the hidden tools">?</div>
@@ -48,9 +49,13 @@
   <div id="alert-bar" class=""></div>
   <div id="help-screen" hidden=true onclick="helpPageIsOpen = false">
     <div>
+      <img src="hope.png" width="70"><br>
       &rightarrow; Use your mouse to either draw or erase.<br>
       &rightarrow; Use the right click to switch between pen and eraser.<br>
-      &rightarrow; Use the Left Arrow button (&leftarrow;) to undo slowly.
+      &rightarrow; Use the Left Arrow button (&leftarrow;) to undo slowly.<br>
+      &rightarrow; <i>Press anywhere to exit this help :)</i>
+      <br><br>
+      For Zea :*
     </div>
   </div>
   <script src="sketch.js"></script>

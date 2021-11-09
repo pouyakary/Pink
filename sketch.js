@@ -14,6 +14,7 @@
     const MOUSE_ERASE_SENSITIVITY = LINE_AVERAGING_SENSITIVITY * 1.5
     const MOUSE_HOVER_SENSITIVITY = 70
     const STORAGE_KEY = "us.kary.pink.model"
+    const LOCK_KEY = "us.kary.pink.lock"
     const SELECTION_PADDING = 20
     const SELECTION_BOX_CORNER_SIZE = 15
     const SELECTION_BOX_STROKE_WEIGHT = 4
@@ -33,6 +34,9 @@
     var frameThatEnteredErase = 0
     var htmlSectionIsActive = false
     var helpPageIsOpen = false
+    var locked = false
+    var status = undefined
+    var lockButton = undefined
 
 //
 // ─── SHAPE ──────────────────────────────────────────────────────────────────────
@@ -268,8 +272,14 @@
 
     function setup() {
         model = new Model()
+        locked = loadLockFromState()
+
+        statusView = document.getElementById("status")
+        lockButton = document.getElementById("lock-button")
+        setLockButtonText()
         createCanvas(window.innerWidth, window.innerHeight);
         canvas = document.querySelector("canvas")
+
         registerEvents()
     }
 
@@ -277,6 +287,11 @@
         const disable = event => event.preventDefault()
         document.addEventListener("contextmenu", disable)
         document.addEventListener("click", disable)
+
+        for (const element of document.querySelectorAll("bar-button")) {
+            element.addEventListener("mouseover", ( ) => htmlSectionIsActive = true)
+            element.addEventListener("mouseout", ( ) => htmlSectionIsActive = false)
+        }
     }
 
 
@@ -341,7 +356,7 @@
 //
 
     function shouldNotHandleTheMouse() {
-        return htmlSectionIsActive || !focused || helpPageIsOpen
+        return htmlSectionIsActive || !focused || helpPageIsOpen || locked
     }
 
     function mousePressed() {
@@ -371,31 +386,37 @@
         resizeCanvas(windowWidth, windowHeight)
     }
 
-    function incrementSize() {
-        strokeSize++
-    }
-
-    function decrementSize() {
-        if (strokeSize > 1) {
-            strokeSize--
-        }
-    }
 
     function toggleEraseDrawMode() {
+        if (locked) return;
         eraseMode = !eraseMode
+    }
+
+    function setLockButtonText() {
+        lockButton.innerText = locked ? "UNLOCK" : "LOCK"
     }
 
 //
 // ─── DRAW HELPERS ───────────────────────────────────────────────────────────────
 //
 
+    function setCursorClassToElement (element, cursor) {
+        for (const cursorClass of ["drawing-cursor", "erasing-cursor", "pointing-cursor"]) {
+            element.classList.remove(cursorClass)
+        }
+        element.classList.add(cursor)
+    }
+
+
     function setCursor() {
-        canvas.classList.remove("drawing-cursor")
-        canvas.classList.remove("erasing-cursor")
-        if (eraseMode) {
-            canvas.classList.add("erasing-cursor")
+        if (locked) {
+            setCursorClassToElement(document.body, "pointing-cursor")
         } else {
-            canvas.classList.add("drawing-cursor")
+            if (eraseMode) {
+                setCursorClassToElement(document.body, "erasing-cursor")
+            } else {
+                setCursorClassToElement(document.body, "drawing-cursor")
+            }
         }
     }
 
@@ -422,16 +443,21 @@
     }
 
     function applyMode() {
-        const button = document.getElementById("status")
-        if (shouldActOnMouseHover) {
-            button.innerHTML = eraseMode ? "ERASING" : "DRAWING"
+        if (locked) {
+            statusView.classList.remove("red")
+            statusView.innerHTML = "VIEW ONLY"
         } else {
-            button.innerHTML = eraseMode ? "ERASE MODE" : "DRAW MODE"
-        }
-        if ( eraseMode ) {
-            button.classList.add("red")
-        } else {
-            button.classList.remove("red")
+            if (shouldActOnMouseHover) {
+                statusView.innerHTML = eraseMode ? "ERASING" : "DRAWING"
+            } else {
+                statusView.innerHTML = eraseMode ? "ERASE MODE" : "DRAW MODE"
+            }
+
+            if ( eraseMode ) {
+                statusView.classList.add("red")
+            } else {
+                statusView.classList.remove("red")
+            }
         }
     }
 
@@ -454,7 +480,6 @@
         }
     }
 
-
 //
 // ─── HELPERS ────────────────────────────────────────────────────────────────────
 //
@@ -464,11 +489,35 @@
     }
 
     function handleClick(func) {
-        setTimeout(() => func())
+        setTimeout(func)
     }
 
     function renderHelpPageBasedOnState() {
         document.getElementById("help-screen").hidden = !helpPageIsOpen
+    }
+
+    function loadLockFromState() {
+        try {
+            const lockState = getItem(LOCK_KEY)
+            if (lockState) {
+                const jsonLockState = JSON.parse(lockState)
+                if (typeof jsonLockState === "boolean") {
+                    return jsonLockState
+                }
+            }
+            return false
+        } catch (error) {
+            return false
+        }
+    }
+
+    function toggleLock() {
+        locked = !locked
+        storeItem(LOCK_KEY, JSON.stringify(locked))
+        setLockButtonText()
+        if (locked) {
+            eraseMode = false
+        }
     }
 
 //
