@@ -270,6 +270,10 @@
                 }
             }
         }
+
+        computeByteArraySize() {
+
+        }
     }
 
 //
@@ -437,13 +441,17 @@
     function decideColor (x, y, shouldAllShapeBeSelected) {
         if (eraseMode) {
             if (somethingIsSelected) {
-                if (shouldAllShapeBeSelected) {
-                    stroke(random(155) + 100 + pinkBase * 0.4, 0, 0) // red
+                if (shouldActOnMouseHover) {
+                    stroke(pinkBase + random(255 - pinkBase), 0, pinkBase + random(255 - pinkBase)) // pink
                 } else {
-                    if (darkMode) {
-                        stroke(random(255 - DARK_PINK_DELTA), 0, random(255 - DARK_PINK_DELTA)) // dark pin
+                    if (shouldAllShapeBeSelected) {
+                        stroke(random(155) + 100 + pinkBase * 0.4, 0, 0) // red
                     } else {
-                        stroke(171, 188, 219)
+                        if (darkMode) {
+                            stroke(random(255 - DARK_PINK_DELTA), 0, random(255 - DARK_PINK_DELTA)) // dark pink
+                        } else {
+                            stroke(171, 188, 219)
+                        }
                     }
                 }
             } else {
@@ -518,6 +526,14 @@
 
     function length (x1, y1, x2, y2) {
         return Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2))
+    }
+
+    function isTouchDevice() {
+        return (
+            ('ontouchstart' in window) ||
+            (navigator.maxTouchPoints > 0) ||
+            (navigator.msMaxTouchPoints > 0)
+        )
     }
 
     function handleClick(func) {
@@ -597,6 +613,14 @@
         const bottomRightY = bottomLeftY
         line(bottomRightX, bottomRightY, bottomRightX - SELECTION_BOX_CORNER_SIZE, bottomRightY)
         line(bottomRightX, bottomRightY - SELECTION_BOX_CORNER_SIZE, bottomRightX, bottomRightY)
+    }
+
+//
+// ─── MODEL TO BYTE ARRAY ────────────────────────────────────────────────────────
+//
+
+    function convertModelToByteArray() {
+
     }
 
 // ────────────────────────────────────────────────────────────────────────────────
