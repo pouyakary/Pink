@@ -450,12 +450,11 @@
                         if (darkMode) {
                             stroke(random(255 - DARK_PINK_DELTA), 0, random(255 - DARK_PINK_DELTA)) // dark pink
                         } else {
-                            stroke(171, 188, 219)
+                            stroke(171, 188, 219) // a solid magenta that matches the light background
                         }
                     }
                 }
             } else {
-                // normal erase mode
                 stroke(pinkBase + random(255 - pinkBase), 0, pinkBase + random(255 - pinkBase)) // pink
             }
         } else {
