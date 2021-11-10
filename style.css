@@ -105,10 +105,11 @@ canvas {
 }
 
 #help-screen {
+    display:                flex;
     background-color:       rgb(104, 117, 140);
     width:                  100vw;
     height:                 100vh;
-    z-index:                2000;
+    z-index:                -2000;
     position:               fixed;
     left:                   0;
     top:                    0;
@@ -119,12 +120,12 @@ canvas {
 
 #help-screen div {
     margin:             auto;
-    margin-top:         30vh;
     line-height:        1.5;
     color:              white;
-    padding:            10pt;
+    padding:            30pt;
     border-radius:      10pt;
     max-width:          fit-content;
+    max-height:         fit-content;
 }
 
 @media (prefers-color-scheme: dark) {

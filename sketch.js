@@ -309,14 +309,13 @@
 
     function draw() {
         darkMode = isTheSystemOnDarkMode()
+        somethingIsSelected = false
+        let shapeIndex = 0
 
         renderHelpPageBasedOnState()
         applyMode()
         setAppearanceColors()
         strokeWeight(FACTORY_STROKE_SIZE)
-
-        somethingIsSelected = false
-        let shapeIndex = 0
 
         for (const shape of model.shapes) {
             const shouldAllShapeBeSelected = eraseMode && shape.isShapeUnderCursor
@@ -540,7 +539,8 @@
     }
 
     function renderHelpPageBasedOnState() {
-        document.getElementById("help-screen").hidden = !helpPageIsOpen
+        document.getElementById("help-screen").style.zIndex =
+            (helpPageIsOpen ? 1 : -1) * 2000
     }
 
     function isTheSystemOnDarkMode() {
