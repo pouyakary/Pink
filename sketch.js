@@ -175,7 +175,12 @@
     class Model {
         constructor() {
             this.shapes = []
-            this.loadPreviousState()
+            if (window.location.search !== "") {
+                this.loadFromModelArray()
+            } else {
+                this.loadPreviousState()
+            }
+
             setInterval(() => this.garbageCollect(), 1000)
         }
 
@@ -197,8 +202,21 @@
             this.shapes[this.shapes.length - 1].append(x, y)
         }
 
+        loadFromModelArray() {
+            try {
+                const state = JSON.parse(atob(window.location.search.replace("?", "")))
+                this.loadFromJSON(state)
+            } catch (error) {
+                console.error("Could not load the model", {error})
+            }
+        }
+
         loadPreviousState() {
             const state = JSON.parse(getItem(STORAGE_KEY))
+            this.loadFromJSON(state)
+        }
+
+        loadFromJSON(state) {
             const shapes = []
             if (state !== null && state !== undefined && state !== "" && state instanceof Array) {
                 for (const shapeRAW of state) {
@@ -222,7 +240,11 @@
         }
 
         storeCurrentState() {
-            storeItem(STORAGE_KEY, JSON.stringify(this.shapes.map(shape => shape.points)))
+            storeItem(STORAGE_KEY, this.json)
+        }
+
+        get urlComponent() {
+            return btoa(this.json)
         }
 
         removeLastShape() {
@@ -263,6 +285,10 @@
             this.storeCurrentState
         }
 
+        get json( ) {
+            return JSON.stringify(this.shapes.map(shape => shape.points))
+        }
+
         garbageCollect() {
             for (let index = 0; index < this.shapes.length; index++) {
                 if (this.shapes[index].size < 2) {
@@ -272,7 +298,11 @@
         }
 
         computeByteArraySize() {
-
+            let size = 0
+            for (const shape of this.shapes) {
+                size += shape.size * 2 + 1
+            }
+            return size
         }
     }
 
@@ -615,11 +645,11 @@
     }
 
 //
-// ─── MODEL TO BYTE ARRAY ────────────────────────────────────────────────────────
+// ─── SHARE ──────────────────────────────────────────────────────────────────────
 //
 
-    function convertModelToByteArray() {
-
+    function shareWithURL() {
+        window.location = "https://pink.pouya.us/?" + model.urlComponent
     }
 
 // ────────────────────────────────────────────────────────────────────────────────
