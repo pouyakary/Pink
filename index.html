@@ -33,9 +33,23 @@
   <meta property="twitter:image" content="https://pink.pouya.us/thumb.png">
 
   <script src="p5.min.js"></script>
+  <script src="clipboard.min.js"></script>
   <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
+  <div class="dialog-container hidden" id="dialog-container">
+    <div class="dialog-box">
+      <div class="dialog-emoji" id="dialog-emoji"></div>
+      <div class="dialog-message-and-buttons">
+        <div class="dialog-message" id="dialog-message"></div>
+        <div class="dialog-buttons-bar">
+          <div class="dialog-button" id="dialog-cancel-button"></div>
+          <div class="dialog-button" id="dialog-okay-button"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="buttons-bar" onmouseover="htmlSectionIsActive = true" onmouseout="htmlSectionIsActive = false">
     <div id="status" class="bar-button"></div>
     <div id="undo-button" class="bar-button" onclick="handleClick(undoLastShape)" title="Undo the last drawn line">UNDO</div>

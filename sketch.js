@@ -33,6 +33,7 @@
     var somethingIsSelected = false
     var frameThatEnteredErase = 0
     var htmlSectionIsActive = false
+    var dialogIsOpen = false
     var helpPageIsOpen = false
     var locked = false
     var status = undefined
@@ -175,10 +176,11 @@
     class Model {
         constructor() {
             this.shapes = []
+
+            this.loadPreviousState()
+
             if (window.location.search !== "") {
-                this.loadFromModelArray()
-            } else {
-                this.loadPreviousState()
+                this.loadFromModelArray(this.shapes)
             }
 
             setInterval(() => this.garbageCollect(), 1000)
@@ -202,13 +204,34 @@
             this.shapes[this.shapes.length - 1].append(x, y)
         }
 
-        loadFromModelArray() {
-            try {
-                const state = JSON.parse(atob(window.location.search.replace("?", "")))
-                this.loadFromJSON(state)
-            } catch (error) {
-                console.error("Could not load the model", {error})
+        loadFromModelArray(shapes) {
+            function shouldOpen() {
+                return new Promise((resolve) => {
+                    if (shapes.length === 0) {
+                        resolve(true)
+                    } else {
+                        askForConfirmation({
+                            emoji:      "🧨",
+                            message:    "Loading the model from this URL will replace your local sketch. Do you want to proceed?",
+                            yes:        "Replace local with shared sketch",
+                            no:         "Keep local",
+                        }).then(resolve)
+                    }
+                })
             }
+            return new Promise((resolve) => {
+                try {
+                    shouldOpen().then(confirmed => {
+                        if (confirmed) {
+                            const state = JSON.parse(atob(window.location.search.replace("?", "")))
+                            this.loadFromJSON(state)
+                        }
+                        resolve(confirmed)
+                    })
+                } catch (error) {
+                    resolve(false)
+                }
+            })
         }
 
         loadPreviousState() {
@@ -233,7 +256,9 @@
                             }
                         }
                     }
-                    shapes.push(new Shape(shapeRAW))
+                    if (shapeRAW.length !== 0) {
+                        shapes.push(new Shape(shapeRAW))
+                    }
                 }
                 this.shapes = shapes
             }
@@ -401,7 +426,7 @@
 //
 
     function shouldNotHandleTheMouse() {
-        return htmlSectionIsActive || !focused || helpPageIsOpen || locked
+        return htmlSectionIsActive || !focused || helpPageIsOpen || locked || dialogIsOpen
     }
 
     function mousePressed() {
@@ -456,7 +481,7 @@
 
 
     function setCursor() {
-        if (locked) {
+        if (locked || dialogIsOpen) {
             setCursorClassToElement(document.body, "pointing-cursor")
         } else {
             if (eraseMode) {
@@ -543,9 +568,16 @@
     }
 
     function reset() {
-        if (confirm('🧨 Are you sure about cleaning all the screen?')) {
-            model.reset()
-        }
+        askForConfirmation({
+            emoji:      "🧨",
+            message:    "Are you sure about cleaning all the screen?",
+            yes:        "Yes, Erase everything",
+            no:         "Cancel",
+        }).then(confirmed => {
+            if (confirmed) {
+                model.reset()
+            }
+        })
     }
 
 //
@@ -597,17 +629,32 @@
     }
 
     function toggleLock() {
-        if (locked) {
-            if (confirm("🧨 Are you sure about unlocking?")) {
-                locked = false
-            }
-        } else {
-            locked = true
-            eraseMode = false
+        function changeLock() {
+            return new Promise((returnNewLockStatus) => {
+                if (locked) {
+                    askForConfirmation({
+                        emoji:      "🧨",
+                        message:    "Are you sure about unlocking?",
+                        yes:        "Yes, Unlock",
+                        no:         "Cancel",
+                    }).then(confirmed => {
+                        returnNewLockStatus(!confirmed)
+                    })
+                } else {
+                    returnNewLockStatus(true)
+                }
+            })
         }
 
-        storeItem(LOCK_KEY, JSON.stringify(locked))
-        applyLockChangeEffects()
+        changeLock().then(newLockStatus => {
+            locked = newLockStatus
+            if (locked) {
+                eraseMode = false
+            }
+            storeItem(LOCK_KEY, JSON.stringify(locked))
+            applyLockChangeEffects()
+        })
+
     }
 
 //
@@ -649,7 +696,86 @@
 //
 
     function shareWithURL() {
-        window.location = "https://pink.pouya.us/?" + model.urlComponent
+        askForConfirmation({
+            emoji:      "🎾",
+            message:    "Do you want to copy the share url to your clipboard?",
+            yes:        "Yes, Copy",
+            no:         "Cancel",
+        }).then(confirmed => {
+            if (confirmed) {
+                const okayButton = document.getElementById("dialog-okay-button")
+                okayButton.setAttribute("data-clipboard-text",
+                    "https://pink.pouya.us/?" + model.urlComponent
+                )
+
+                const clipboard = new ClipboardJS("#dialog-okay-button")
+
+                clipboard.on('success', (event) => {
+                    event.clearSelection()
+                    okayButton.removeAttribute("data-clipboard-text")
+                })
+
+                clipboard.on('error', () => {
+                    okayButton.removeAttribute("data-clipboard-text")
+                })
+            }
+        })
+    }
+
+    function afterEdit() {
+        window.location
+    }
+
+//
+// ─── DIALOG ─────────────────────────────────────────────────────────────────────
+//
+
+    async function test() {
+        const result = await askForConfirmation({
+            emoji:      "🧨",
+            message:    "Are you sure about removing this?",
+            yes:        "Ok",
+            no:         "Hell no",
+        })
+
+        console.log("returned", result)
+    }
+
+    function askForConfirmation({ message, yes, no, emoji }) {
+        return new Promise((resolve, reject) => {
+            const container     = document.getElementById("dialog-container")
+            const dialogEmoji   = document.getElementById("dialog-emoji")
+            const messageBox    = document.getElementById("dialog-message")
+            const okayButton    = document.getElementById("dialog-okay-button")
+            const cancelButton  = document.getElementById("dialog-cancel-button")
+
+            dialogEmoji.innerText   = emoji
+            messageBox.innerText    = message
+            okayButton.innerText    = yes
+            cancelButton.innerText  = no
+
+            function onOkay() {
+                closeDialog()
+                resolve(true)
+            }
+
+            function onCancel() {
+                closeDialog()
+                resolve(false)
+            }
+
+            function closeDialog() {
+                okayButton.removeEventListener("click", onOkay)
+                cancelButton.removeEventListener("click", onCancel)
+                container.classList.add("hidden")
+                dialogIsOpen = false
+            }
+
+            okayButton.addEventListener("click", onOkay)
+            cancelButton.addEventListener("click", onCancel)
+            dialogIsOpen = true
+            container.classList.remove("hidden")
+        })
     }
 
 // ────────────────────────────────────────────────────────────────────────────────

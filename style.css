@@ -1,5 +1,6 @@
 
 * {
+    box-sizing:             border-box;
     user-select:            none;
     -moz-user-select:       none;
     -webkit-user-select:    none;
@@ -128,6 +129,65 @@ canvas {
     max-height:         fit-content;
 }
 
+.dialog-container {
+    padding:                20pt;
+    width:                  100vw;
+    background:             white;
+    position:               fixed;
+    z-index:                3000;
+    left:                   0;
+    top:                    0;
+    transition-duration:    0.3s;
+}
+
+.dialog-container.hidden {
+    top:                    -100pt;
+    transition-duration:    0.3s;
+}
+
+.dialog-box {
+    margin:         auto;
+    max-width:      fit-content;
+    display:        flex;
+}
+
+.dialog-emoji {
+    font-size:          2rem;
+    margin-right:       10pt;
+    max-width:          fit-content;
+    flex:               auto;
+}
+
+.dialog-message-and-buttons {
+    padding-top:    3pt;
+}
+
+.dialog-message {
+    max-width:          330pt;
+    line-height:        1.5;
+    padding-left:       2pt;
+}
+
+.dialog-buttons-bar {
+    min-width:      200pt;
+    display:        flex;
+    margin-top:     10pt;
+}
+
+.dialog-button {
+    font-size:              0.9rem;
+    padding:                3pt 11pt 4pt 10pt;
+    background-color:       #eee;
+    border-radius:          30pt;
+    margin-right:           10pt;
+    cursor:                 pointer;
+}
+
+.dialog-button:hover {
+    background-color:       black;
+    color:                  white;
+}
+
 @media (prefers-color-scheme: dark) {
     .bar-button {
         background-color:       #424242;
@@ -163,5 +223,19 @@ canvas {
 
     #help-screen {
         background:     black;
+    }
+
+    .dialog-container {
+        background:     #292929;
+        color:          white;
+    }
+
+    .dialog-button {
+        background-color:       #424242;
+    }
+
+    .dialog-button:hover {
+        background-color:       #eee;
+        color:                  black;
     }
 }
