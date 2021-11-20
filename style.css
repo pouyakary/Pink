@@ -138,6 +138,8 @@ canvas {
     left:                   0;
     top:                    0;
     transition-duration:    0.3s;
+    max-height:             120pt;
+    overflow:               hidden;
 }
 
 .dialog-container.hidden {
