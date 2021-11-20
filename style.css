@@ -141,7 +141,7 @@ canvas {
 }
 
 .dialog-container.hidden {
-    top:                    -100pt;
+    top:                    -120pt;
     transition-duration:    0.3s;
 }
 
