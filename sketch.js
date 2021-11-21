@@ -213,8 +213,8 @@
                         askForConfirmation({
                             emoji:      "🧨",
                             message:    "Loading the model from this URL will replace your local sketch. Do you want to proceed?",
-                            yes:        "Replace local with shared sketch",
-                            no:         "Keep local",
+                            yes:        "Replace Local With Shared Sketch",
+                            no:         "Keep Local",
                         }).then(resolve)
                     }
                 })
@@ -571,8 +571,8 @@
         askForConfirmation({
             emoji:      "🧨",
             message:    "Are you sure about cleaning all the screen?",
-            yes:        "Yes, Erase everything",
-            no:         "Cancel",
+            yes:        "Erase Everything",
+            no:         "Stop",
         }).then(confirmed => {
             if (confirmed) {
                 model.reset()
@@ -635,8 +635,8 @@
                     askForConfirmation({
                         emoji:      "🧨",
                         message:    "Are you sure about unlocking?",
-                        yes:        "Yes, Unlock",
-                        no:         "Cancel",
+                        yes:        "Unlock",
+                        no:         "Stay Locked",
                     }).then(confirmed => {
                         returnNewLockStatus(!confirmed)
                     })
@@ -699,8 +699,8 @@
         askForConfirmation({
             emoji:      "🎾",
             message:    "Do you want to copy the share url to your clipboard?",
-            yes:        "Yes, Copy",
-            no:         "Cancel",
+            yes:        "Copy",
+            no:         "Stop",
         }).then(confirmed => {
             if (confirmed) {
                 const okayButton = document.getElementById("dialog-okay-button")
@@ -710,7 +710,7 @@
 
                 const clipboard = new ClipboardJS("#dialog-okay-button")
 
-                clipboard.on('success', (event) => {
+                clipboard.on('success', event => {
                     event.clearSelection()
                     okayButton.removeAttribute("data-clipboard-text")
                 })
@@ -730,19 +730,8 @@
 // ─── DIALOG ─────────────────────────────────────────────────────────────────────
 //
 
-    async function test() {
-        const result = await askForConfirmation({
-            emoji:      "🧨",
-            message:    "Are you sure about removing this?",
-            yes:        "Ok",
-            no:         "Hell no",
-        })
-
-        console.log("returned", result)
-    }
-
     function askForConfirmation({ message, yes, no, emoji }) {
-        return new Promise((resolve, reject) => {
+        return new Promise(returnConfirmation => {
             const container     = document.getElementById("dialog-container")
             const dialogEmoji   = document.getElementById("dialog-emoji")
             const messageBox    = document.getElementById("dialog-message")
@@ -756,12 +745,12 @@
 
             function onOkay() {
                 closeDialog()
-                resolve(true)
+                returnConfirmation(true)
             }
 
             function onCancel() {
                 closeDialog()
-                resolve(false)
+                returnConfirmation(false)
             }
 
             function closeDialog() {
