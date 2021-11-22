@@ -308,6 +308,7 @@
         reset() {
             this.shapes = []
             this.storeCurrentState
+            resetURL()
         }
 
         get json( ) {
@@ -583,6 +584,10 @@
 //
 // ─── HELPERS ────────────────────────────────────────────────────────────────────
 //
+
+    function resetURL () {
+        window.location.href = window.location.pathname
+    }
 
     function length (x1, y1, x2, y2) {
         return Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2))
