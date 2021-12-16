@@ -236,29 +236,32 @@
 
         loadPreviousState() {
             const state = JSON.parse(getItem(STORAGE_KEY))
-            this.loadFromJSON(state)
+            if (state !== null && state !== undefined && state !== "" && state instanceof Array) {
+                this.loadFromJSON(state)
+            } else {
+                this.loadFromJSON(ZEAS_SNAIL)
+                setTimeout(() => this.center())
+            }
         }
 
         loadFromJSON(state) {
             const shapes = []
-            if (state !== null && state !== undefined && state !== "" && state instanceof Array) {
-                for (const shapeRAW of state) {
-                    if (!shapeRAW instanceof Array) {
+            for (const shapeRAW of state) {
+                if (!shapeRAW instanceof Array) {
+                    return
+                }
+                for (const point of shapeRAW) {
+                    if (!point instanceof Array) {
                         return
                     }
-                    for (const point of shapeRAW) {
-                        if (!point instanceof Array) {
+                    for (const position of point) {
+                        if (typeof position !== "number") {
                             return
                         }
-                        for (const position of point) {
-                            if (typeof position !== "number") {
-                                return
-                            }
-                        }
                     }
-                    if (shapeRAW.length !== 0) {
-                        shapes.push(new Shape(shapeRAW))
-                    }
+                }
+                if (shapeRAW.length !== 0) {
+                    shapes.push(new Shape(shapeRAW))
                 }
                 this.shapes = shapes
             }
@@ -329,6 +332,55 @@
                 size += shape.size * 2 + 1
             }
             return size
+        }
+
+        get boundary() {
+            let minX = Infinity
+            let maxX = -Infinity
+            let minY = Infinity
+            let maxY = -Infinity
+
+            for (const shape of this.shapes) {
+                for (const [x, y] of shape.points) {
+                    if (x > maxX) {
+                        maxX = x
+                    }
+                    if (x < minX) [
+                        minX = x
+                    ]
+                    if (y > maxY) {
+                        maxY = y
+                    }
+                    if (y < minY) {
+                        minY = y
+                    }
+                }
+            }
+
+            const strokeSizeBoundary = FACTORY_STROKE_SIZE - 1
+            const halfOfStrokeBoundary = Math.floor(strokeSizeBoundary / 2)
+            const width = maxX - minX + strokeSizeBoundary
+            const height = maxY - minY + strokeSizeBoundary
+
+            return {
+                x: minX - halfOfStrokeBoundary,
+                y: minY - halfOfStrokeBoundary,
+                width, height
+            }
+        }
+
+        center() {
+            const boundary = this.boundary
+            const newBaseX = (width - boundary.width) / 2
+            const newBaseY = (height - boundary.height) / 2
+            const dx = newBaseX - boundary.x
+            const dy = newBaseY - boundary.y
+            for (const shape of this.shapes) {
+                for (const point of shape.points) {
+                    point[0] += dx
+                    point[1] += dy
+                }
+            }
         }
     }
 
@@ -464,7 +516,9 @@
     }
 
     function applyLockChangeEffects() {
-        lockButton.innerText = locked ? "UNLOCK" : "LOCK"
+        lockButton.innerHTML = locked
+            ? `<span class="material-icons-outlined">lock</span>`
+            : `<span class="material-icons-outlined">lock_open</span>`
         undoButton.hidden = locked
         resetButton.hidden = locked
     }
@@ -660,6 +714,10 @@
             applyLockChangeEffects()
         })
 
+    }
+
+    function makeCenter() {
+        model.center()
     }
 
 //

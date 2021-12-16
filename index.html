@@ -35,6 +35,7 @@
   <script src="p5.min.js"></script>
   <script src="clipboard.min.js"></script>
   <link rel="stylesheet" type="text/css" href="style.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
   <div class="dialog-container hidden" id="dialog-container">
@@ -52,11 +53,22 @@
 
   <div class="buttons-bar" onmouseover="htmlSectionIsActive = true" onmouseout="htmlSectionIsActive = false">
     <div id="status" class="bar-button"></div>
-    <div id="undo-button" class="bar-button" onclick="handleClick(undoLastShape)" title="Undo the last drawn line">UNDO</div>
-    <div id="reset-button" class="bar-button" onclick="handleClick(reset)" title="Clear the whole canvas">RESET</div>
-    <div id="lock-button" class="bar-button" onclick="handleClick(toggleLock)" title="Toggle Lock">LOCK</div>
-    <div class="bar-button" onclick="handleClick(shareWithURL)" title="Share the drawing with URL">SHARE</div>
-    <div class="bar-button" onclick="helpPageIsOpen = true" title="Learn about the hidden tools">?</div>
+    <div id="undo-button" class="material-icons bar-button" onclick="handleClick(undoLastShape)" title="Undo the last drawn line">
+      undo
+    </div>
+    <div id="reset-button" class="material-icons bar-button" onclick="handleClick(reset)" title="Clear the whole canvas">
+      restart_alt
+    </div>
+    <div class="material-icons bar-button" onclick="handleClick(makeCenter)" title="Center the drawing in the screen">
+      zoom_in_map
+    </div>
+    <div id="lock-button" class="material-icons material-icons-outlined bar-button" onclick="handleClick(toggleLock)" title="Toggle Lock">lock</div>
+    <div class="material-icons bar-button" onclick="handleClick(shareWithURL)" title="Share the drawing with URL">
+      ios_share
+    </div>
+    <div class="material-icons bar-button" onclick="helpPageIsOpen = true" title="Learn about the hidden tools">
+      book
+    </div>
   </div>
 
   <div id="help-screen" onclick="helpPageIsOpen = false">
@@ -69,8 +81,10 @@
         <li>Please don't use it on your phone :)</li>
         <li><i>Press anywhere to exit this help :)</i></li>
       </ul>
+      &mdash; The beautiful snail is by amazing zea &lt;3
     </div>
   </div>
+  <script src="zeas-snail.js"></script>
   <script src="sketch.js"></script>
 </body>
 </html>
