@@ -20,6 +20,7 @@
     const SELECTION_BOX_STROKE_WEIGHT = 4
     const DARK_PINK_DELTA = 130
     const LIGHT_PINK_BASE = 145
+    const BOUNDARY_SENSITIVITY = 8;
 
 //
 // ─── GLOBALS ────────────────────────────────────────────────────────────────────
@@ -40,6 +41,7 @@
     var lockButton = undefined
     var undoButton = undefined
     var resetButton = undefined
+    var centerButton = undefined
     var darkMode = false
     var pinkBase = 0
 
@@ -319,8 +321,14 @@
         }
 
         garbageCollect() {
+            if (shouldActOnMouseHover) {
+                return
+            }
+
             for (let index = 0; index < this.shapes.length; index++) {
-                if (this.shapes[index].size < 2) {
+                const shape = this.shapes[index]
+                const boundary = shape.computeBoundary()
+                if (shape.size < 2 || boundary.width < BOUNDARY_SENSITIVITY || boundary.height < BOUNDARY_SENSITIVITY) {
                     this.removeShapeAtIndex(index)
                 }
             }
@@ -370,6 +378,7 @@
         }
 
         center() {
+            this.garbageCollect()
             const boundary = this.boundary
             const newBaseX = (width - boundary.width) / 2
             const newBaseY = (height - boundary.height) / 2
@@ -396,6 +405,7 @@
         lockButton = document.getElementById("lock-button")
         undoButton = document.getElementById("undo-button")
         resetButton = document.getElementById("reset-button")
+        centerButton = document.getElementById("center-button")
         applyLockChangeEffects()
         createCanvas(window.innerWidth, window.innerHeight);
         canvas = document.querySelector("canvas")
@@ -516,11 +526,17 @@
     }
 
     function applyLockChangeEffects() {
-        lockButton.innerHTML = locked
+        lockButton.innerHTML = (locked
             ? `<span class="material-icons-outlined">lock</span>`
             : `<span class="material-icons-outlined">lock_open</span>`
-        undoButton.hidden = locked
-        resetButton.hidden = locked
+            )
+        setElementHidden(undoButton, locked)
+        setElementHidden(resetButton, locked)
+        setElementHidden(centerButton, locked)
+    }
+
+    function setElementHidden(element, shouldBeHidden) {
+        element.style.display = shouldBeHidden ? "none" : "block"
     }
 
 //
