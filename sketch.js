@@ -677,8 +677,8 @@
     }
 
     function renderHelpPageBasedOnState() {
-        document.getElementById("help-screen").style.zIndex =
-            (helpPageIsOpen ? 1 : -1) * 2000
+        document.getElementById("help-screen").style.display =
+            helpPageIsOpen ? "flex" : "none"
     }
 
     function isTheSystemOnDarkMode() {
