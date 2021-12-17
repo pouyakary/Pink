@@ -20,7 +20,7 @@
     const SELECTION_BOX_STROKE_WEIGHT = 4
     const DARK_PINK_DELTA = 130
     const LIGHT_PINK_BASE = 145
-    const BOUNDARY_SENSITIVITY = 8;
+    const BOUNDARY_SENSITIVITY = 8.1;
 
 //
 // ─── GLOBALS ────────────────────────────────────────────────────────────────────
@@ -184,8 +184,6 @@
             if (window.location.search !== "") {
                 this.loadFromModelArray(this.shapes)
             }
-
-            setInterval(() => this.garbageCollect(), 1000)
         }
 
         get size() {
@@ -325,10 +323,13 @@
                 return
             }
 
+            const bs2 = Math.pow(BOUNDARY_SENSITIVITY, 2)
+
             for (let index = 0; index < this.shapes.length; index++) {
                 const shape = this.shapes[index]
                 const boundary = shape.computeBoundary()
-                if (shape.size < 2 || boundary.width < BOUNDARY_SENSITIVITY || boundary.height < BOUNDARY_SENSITIVITY) {
+                console.log({boundary})
+                if (shape.size < 2 || boundary.width * boundary.height < bs2) {
                     this.removeShapeAtIndex(index)
                 }
             }
