@@ -131,6 +131,11 @@ canvas {
     max-height:         fit-content;
 }
 
+#help-screen a {
+    color:              white;
+    text-decoration:    underline;
+}
+
 .dialog-container {
     padding:                20pt;
     width:                  100vw;
