@@ -5,9 +5,9 @@
 //
 
 
-//
-// ─── CONSTANTS ──────────────────────────────────────────────────────────────────
-//
+// ─── Constants ─────────────────────────────────────────────────────────── ✣ ─
+
+// MARK: Constants
 
 const FACTORY_STROKE_SIZE = 9
 const LINE_AVERAGING_SENSITIVITY = 7
@@ -22,9 +22,9 @@ const DARK_PINK_DELTA = 130
 const LIGHT_PINK_BASE = 145
 const BOUNDARY_SENSITIVITY = 8.1;
 
-//
-// ─── GLOBALS ────────────────────────────────────────────────────────────────────
-//
+// ─── Globals ───────────────────────────────────────────────────────────── ✣ ─
+
+// MARK: Globals
 
 var model = null
 var shouldActOnMouseHover = false
@@ -45,27 +45,35 @@ var centerButton = undefined
 var darkMode = false
 var pinkBase = 0
 
-//
-// ─── SHAPE ──────────────────────────────────────────────────────────────────────
-//
+// ─── Shape ─────────────────────────────────────────────────────────────── ✣ ─
+
+// MARK: Shape
 
 class Shape {
     constructor(initial) {
         this.points = initial ? initial : []
     }
 
+    // MARK: ... Append
+
     append(x, y) {
         this.points.push([x, y])
         this.finalize()
     }
 
+    // MARK: ... Read
+
     read(index) {
         this.points[index]
     }
 
+    // MARK: ... Size
+
     get size() {
         return this.points.length
     }
+
+    // MARK: ... Compute Boundary
 
     computeBoundary() {
         let minX = Infinity
@@ -100,6 +108,8 @@ class Shape {
         }
     }
 
+    // MARK: ... Is Cursor?
+
     get isShapeUnderCursor() {
         for (const [x, y] of this.points) {
             if (length(x, y, mouseX, mouseY) < MOUSE_ERASE_SENSITIVITY) {
@@ -108,6 +118,8 @@ class Shape {
         }
         return false
     }
+
+    // MARK: ... Draw
 
     draw(shouldAllShapeBeSelected) {
         let px = 0
@@ -125,6 +137,8 @@ class Shape {
         }
     }
 
+    // MARK: ... Draw Selection
+
     drawSelection() {
         const { x, y, width, height } = this.computeBoundary()
         if (darkMode) {
@@ -132,9 +146,13 @@ class Shape {
         }
     }
 
+    // MARK: ... Remove Last Point
+
     removeLastPoint() {
         this.points.pop()
     }
+
+    // MARK: ... Make Lines Even
 
     makeLinesEven() {
         if (!this.points || this.points.length === 0) {
@@ -166,14 +184,16 @@ class Shape {
         this.points = newPoints
     }
 
+    // MARK: ... Finalize
+
     finalize() {
         this.makeLinesEven()
     }
 }
 
-//
-// ─── MODEL ──────────────────────────────────────────────────────────────────────
-//
+// ─── Model ─────────────────────────────────────────────────────────────── ✣ ─
+
+// MARK: Model
 
 class Model {
     constructor() {
@@ -420,8 +440,12 @@ function registerEvents() {
     document.addEventListener("click", disable)
 
     for (const element of document.querySelectorAll("bar-button")) {
-        element.addEventListener("mouseover", () => htmlSectionIsActive = true)
-        element.addEventListener("mouseout", () => htmlSectionIsActive = false)
+        for (const ev of ["touchstart", "mousedown"]) {
+            element.addEventListener(ev, () => htmlSectionIsActive = true)
+        }
+        for (const ev of ["touchend", "touchleave", "mouseup", "mouseout"]) {
+            element.addEventListener(ev, () => htmlSectionIsActive = false)
+        }
     }
 }
 
