@@ -8,6 +8,10 @@ uniform sampler2D uColorLayer;
 uniform vec2 uResolution;
 uniform float uTime;
 uniform float uDarkMode;
+uniform vec2 uHoverCenter;
+uniform float uHoverRadius;
+uniform float uHoverEnabled;
+uniform vec3 uHoverColor;
 
 varying vec2 vTexCoord;
 
@@ -69,6 +73,16 @@ void main() {
     }
 
     vec3 baseColor = strokeSample.rgb;
+
+    if (uHoverEnabled > 0.5) {
+        float safeRadius = max(uHoverRadius, 0.0001);
+        vec2 pixelPos = uv * uResolution;
+        float distanceToHover = distance(pixelPos, uHoverCenter);
+        float normalizedDistance = clamp(distanceToHover / safeRadius, 0.0, 1.0);
+        float hoverFactor = 1.0 - smoothstep(0.0, 1.0, normalizedDistance);
+        hoverFactor = pow(hoverFactor, 1.4);
+        baseColor = mix(baseColor, uHoverColor, hoverFactor);
+    }
 
     vec2 pixelUV = uv * uResolution;
     vec2 sparkleTile = floor(pixelUV * 0.17);
