@@ -24,8 +24,8 @@ const BOUNDARY_SENSITIVITY = 8.1;
 
 const ERASE_BASE_COLOR_LIGHT = [171, 188, 219]
 const ERASE_BASE_COLOR_DARK = [197, 57, 115]
-const ERASE_SELECTED_COLOR_LIGHT = [255, 0, 0]
-const ERASE_SELECTED_COLOR_DARK = [255, 126, 168]
+const ERASE_SELECTED_COLOR_LIGHT = [230, 0, 0]
+const ERASE_SELECTED_COLOR_DARK = [200, 0, 0]
 const HIGHLIGHT_COLOR_LIGHT = [90, 37, 161]
 const HIGHLIGHT_COLOR_DARK = [90, 37, 161]
 const DRAW_COLOR_LIGHT = [199, 21, 133]
@@ -58,6 +58,7 @@ var maskLayer = null
 var glitterLayer = null
 var glitterShader = null
 var maskNeedsFullRedraw = true
+var overlayLayer = null
 
 // ─── Shape ─────────────────────────────────────────────────────────────── ✣ ─
 
@@ -485,6 +486,7 @@ function initializeGraphicsLayers() {
     createColorLayer()
     createMaskLayer()
     createGlitterLayer()
+    createOverlayLayer()
     scheduleMaskRebuild()
 }
 
@@ -524,6 +526,13 @@ function configureMaskLayer() {
     maskLayer.noFill()
 }
 
+function createOverlayLayer() {
+    overlayLayer = createGraphics(windowWidth, windowHeight)
+    overlayLayer.pixelDensity(pixelDensity())
+    overlayLayer.clear()
+    overlayLayer.noFill()
+}
+
 function createGlitterLayer() {
     glitterLayer = createGraphics(windowWidth, windowHeight, WEBGL)
     glitterLayer.pixelDensity(pixelDensity())
@@ -536,6 +545,7 @@ function recreateGraphicsLayers() {
     createColorLayer()
     createMaskLayer()
     createGlitterLayer()
+    createOverlayLayer()
     rebuildMaskFromModel()
 }
 
@@ -665,9 +675,7 @@ function draw() {
         image(colorLayer, 0, 0, width, height)
     }
 
-    if (somethingIsSelected && !shouldActOnMouseHover && selectedShapeIndex >= 0) {
-        model.shapes[selectedShapeIndex].drawSelection()
-    }
+    renderOverlay()
 
     setCursor()
 
@@ -835,12 +843,14 @@ function applyMode() {
 }
 
 function setAppearanceColors() {
-    if (darkMode) {
+    pinkBase = darkMode ? 0 : LIGHT_PINK_BASE
+
+    if (eraseMode) {
+        background(210, 222, 245)
+    } else if (darkMode) {
         background(0)
-        pinkBase = 0
     } else {
         background(255, 190, 215)
-        pinkBase = LIGHT_PINK_BASE
     }
 }
 
@@ -959,33 +969,52 @@ function makeCenter() {
 //
 
 function drawSelectionBox(x, y, width, height) {
-    strokeWeight(SELECTION_BOX_STROKE_WEIGHT)
-    stroke(200 + (darkMode ? 0 : 30), 0, 0)
-    fill(0, 0, 0, 0)
+    if (!overlayLayer) {
+        return
+    }
 
-    // top left
+    overlayLayer.strokeWeight(SELECTION_BOX_STROKE_WEIGHT)
+    overlayLayer.stroke(200 + (darkMode ? 0 : 30), 0, 0)
+    overlayLayer.noFill()
+
     const topLeftX = x - SELECTION_PADDING
     const topLeftY = y - SELECTION_PADDING
-    line(topLeftX, topLeftY, topLeftX + SELECTION_BOX_CORNER_SIZE, topLeftY)
-    line(topLeftX, topLeftY, topLeftX, topLeftY + SELECTION_BOX_CORNER_SIZE)
 
-    // top right
+    overlayLayer.line(topLeftX, topLeftY, topLeftX + SELECTION_BOX_CORNER_SIZE, topLeftY)
+    overlayLayer.line(topLeftX, topLeftY, topLeftX, topLeftY + SELECTION_BOX_CORNER_SIZE)
+
     const topRightX = topLeftX + 2 * SELECTION_PADDING + width
     const topRightY = topLeftY
-    line(topRightX - SELECTION_BOX_CORNER_SIZE, topRightY, topRightX, topRightY)
-    line(topRightX, topRightY, topRightX, topRightY + SELECTION_BOX_CORNER_SIZE)
+    overlayLayer.line(topRightX - SELECTION_BOX_CORNER_SIZE, topRightY, topRightX, topRightY)
+    overlayLayer.line(topRightX, topRightY, topRightX, topRightY + SELECTION_BOX_CORNER_SIZE)
 
-    // bottom left
     const bottomLeftX = topLeftX
     const bottomLeftY = topLeftY + 2 * SELECTION_PADDING + height
-    line(bottomLeftX, bottomLeftY, bottomLeftX + SELECTION_BOX_CORNER_SIZE, bottomLeftY)
-    line(bottomLeftX, bottomLeftY - SELECTION_BOX_CORNER_SIZE, bottomLeftX, bottomLeftY)
+    overlayLayer.line(bottomLeftX, bottomLeftY, bottomLeftX + SELECTION_BOX_CORNER_SIZE, bottomLeftY)
+    overlayLayer.line(bottomLeftX, bottomLeftY - SELECTION_BOX_CORNER_SIZE, bottomLeftX, bottomLeftY)
 
-    // bottom right
     const bottomRightX = topRightX
     const bottomRightY = bottomLeftY
-    line(bottomRightX, bottomRightY, bottomRightX - SELECTION_BOX_CORNER_SIZE, bottomRightY)
-    line(bottomRightX, bottomRightY - SELECTION_BOX_CORNER_SIZE, bottomRightX, bottomRightY)
+    overlayLayer.line(bottomRightX, bottomRightY, bottomRightX - SELECTION_BOX_CORNER_SIZE, bottomRightY)
+    overlayLayer.line(bottomRightX, bottomRightY - SELECTION_BOX_CORNER_SIZE, bottomRightX, bottomRightY)
+}
+
+function renderOverlay() {
+    if (!overlayLayer) {
+        return
+    }
+
+    overlayLayer.clear()
+
+    if (somethingIsSelected && (eraseMode || !shouldActOnMouseHover) && selectedShapeIndex >= 0) {
+        const shape = model.shapes[selectedShapeIndex]
+        if (shape) {
+            const { x, y, width, height } = shape.computeBoundary()
+            drawSelectionBox(x, y, width, height)
+        }
+    }
+
+    image(overlayLayer, 0, 0, width, height)
 }
 
 //
