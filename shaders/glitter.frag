@@ -4,10 +4,9 @@ precision mediump int;
 #endif
 
 uniform sampler2D uMask;
+uniform sampler2D uColorLayer;
 uniform vec2 uResolution;
 uniform float uTime;
-uniform vec3 uInkColor;
-uniform vec3 uSparkleColor;
 uniform float uDarkMode;
 
 varying vec2 vTexCoord;
@@ -31,22 +30,30 @@ float noise(vec2 uv) {
 }
 
 void main() {
-    float mask = texture2D(uMask, vTexCoord).a;
+    vec2 uv = vTexCoord;
+    vec4 strokeSample = texture2D(uColorLayer, uv);
+    float maskSample = texture2D(uMask, uv).a;
+    float mask = max(strokeSample.a, maskSample);
+
     if (mask < 0.01) {
         discard;
     }
 
-    vec2 uv = vTexCoord * uResolution;
-    float sparkleSeed = hash(floor(uv * 0.6));
-    float twinkle = sin(uTime * 6.0 + sparkleSeed * 40.0);
-    float grain = noise(uv * 2.4 + twinkle);
-    float sparkle = smoothstep(0.55, 1.0, max(grain, sparkleSeed));
+    vec3 baseColor = strokeSample.rgb;
 
-    float highlight = smoothstep(0.75, 1.0, sin(uTime * 9.0 + sparkleSeed * 20.0) * 0.5 + 0.5);
-    vec3 base = mix(uInkColor, uSparkleColor, sparkle);
-    vec3 accent = mix(base, uSparkleColor, highlight);
+    vec2 pixelUV = uv * uResolution;
+    float sparkleSeed = hash(floor(pixelUV * 0.6));
+    float twinkle = sin(uTime * 6.0 + sparkleSeed * 40.0);
+    float grain = noise(pixelUV * 2.4 + twinkle);
+    float sparkle = smoothstep(0.35, 1.0, max(grain, sparkleSeed));
+    float highlight = smoothstep(0.5, 1.0, sin(uTime * 9.0 + sparkleSeed * 20.0) * 0.5 + 0.5);
+
+    vec3 sparkleLift = baseColor * (1.1 + sparkle * 0.65) + vec3(sparkle) * 0.1;
+    vec3 highlightLift = mix(baseColor, sparkleLift, 0.45 + 0.45 * highlight);
     float boardGlow = mix(0.08, 0.25, uDarkMode);
-    vec3 color = accent + vec3(boardGlow) * sparkleSeed * 0.2;
+    vec3 glow = vec3(boardGlow * sparkleSeed * 0.3);
+
+    vec3 color = clamp(highlightLift + glow, 0.0, 1.0);
 
     gl_FragColor = vec4(color, clamp(mask, 0.0, 1.0));
 }
