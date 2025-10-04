@@ -21,6 +21,7 @@ const SELECTION_BOX_STROKE_WEIGHT = 4
 const DARK_PINK_DELTA = 130
 const LIGHT_PINK_BASE = 145
 const BOUNDARY_SENSITIVITY = 8.1;
+const CURVE_SMOOTHING_STEPS = 4
 
 const ERASE_BASE_COLOR_LIGHT = [171, 188, 219]
 const ERASE_BASE_COLOR_DARK = [197, 57, 115]
@@ -167,9 +168,39 @@ class Shape {
         this.points.pop()
     }
 
+    // MARK: ... Smooth Curve
+
+    smoothCurve() {
+        if (!this.points || this.points.length < 3 || CURVE_SMOOTHING_STEPS <= 0) {
+            return
+        }
+
+        const smoothed = [clonePoint(this.points[0])]
+        const lastIndex = this.points.length - 1
+        const subdivisions = CURVE_SMOOTHING_STEPS
+
+        for (let index = 0; index < lastIndex; index++) {
+            const p0 = this.points[index === 0 ? 0 : index - 1]
+            const p1 = this.points[index]
+            const p2 = this.points[index + 1]
+            const p3 = this.points[index + 2 <= lastIndex ? index + 2 : lastIndex]
+
+            for (let step = 1; step <= subdivisions; step++) {
+                const t = step / (subdivisions + 1)
+                smoothed.push(catmullRomPoint(p0, p1, p2, p3, t))
+            }
+
+            smoothed.push(clonePoint(p2))
+        }
+
+        this.points = smoothed
+    }
+
     // MARK: ... Finalize
 
-    finalize() {}
+    finalize() {
+        this.smoothCurve()
+    }
 }
 
 // ─── Model ─────────────────────────────────────────────────────────────── ✣ ─
@@ -847,6 +878,20 @@ function resetURL() {
 
 function length(x1, y1, x2, y2) {
     return Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2))
+}
+
+function clonePoint(point) {
+    return [point[0], point[1]]
+}
+
+function catmullRomPoint(p0, p1, p2, p3, t) {
+    const t2 = t * t
+    const t3 = t2 * t
+
+    const x = 0.5 * (2 * p1[0] + (-p0[0] + p2[0]) * t + (2 * p0[0] - 5 * p1[0] + 4 * p2[0] - p3[0]) * t2 + (-p0[0] + 3 * p1[0] - 3 * p2[0] + p3[0]) * t3)
+    const y = 0.5 * (2 * p1[1] + (-p0[1] + p2[1]) * t + (2 * p0[1] - 5 * p1[1] + 4 * p2[1] - p3[1]) * t2 + (-p0[1] + 3 * p1[1] - 3 * p2[1] + p3[1]) * t3)
+
+    return [x, y]
 }
 
 function isTouchDevice() {
