@@ -12,7 +12,7 @@
 const FACTORY_STROKE_SIZE = 9
 const LINE_AVERAGING_SENSITIVITY = 7
 const MOUSE_ERASE_SENSITIVITY = LINE_AVERAGING_SENSITIVITY * 1.5
-const MOUSE_HOVER_SENSITIVITY = 70
+const MOUSE_HOVER_SENSITIVITY = 120
 const STORAGE_KEY = "org.pouyakary.pink.model"
 const LOCK_KEY = "org.pouyakary.pink.lock"
 const SELECTION_PADDING = 20
@@ -21,6 +21,15 @@ const SELECTION_BOX_STROKE_WEIGHT = 4
 const DARK_PINK_DELTA = 130
 const LIGHT_PINK_BASE = 145
 const BOUNDARY_SENSITIVITY = 8.1;
+
+const ERASE_BASE_COLOR_LIGHT = [171, 188, 219]
+const ERASE_BASE_COLOR_DARK = [197, 57, 115]
+const ERASE_SELECTED_COLOR_LIGHT = [255, 0, 0]
+const ERASE_SELECTED_COLOR_DARK = [255, 126, 168]
+const HIGHLIGHT_COLOR_LIGHT = [90, 37, 161]
+const HIGHLIGHT_COLOR_DARK = [90, 37, 161]
+const DRAW_COLOR_LIGHT = [199, 21, 133]
+const DRAW_COLOR_DARK = [199, 21, 133]
 
 // ─── Globals ───────────────────────────────────────────────────────────── ✣ ─
 
@@ -769,38 +778,40 @@ function setCursor() {
     }
 }
 
+function applyStroke(painter, color) {
+    if (!color) {
+        return
+    }
+    painter.stroke(color[0], color[1], color[2])
+}
+
 function decideColor(x, y, shouldAllShapeBeSelected, target = null) {
     const painter = target || window
+    const drawBaseColor = darkMode ? DRAW_COLOR_DARK : DRAW_COLOR_LIGHT
+    const highlightColor = darkMode ? HIGHLIGHT_COLOR_DARK : HIGHLIGHT_COLOR_LIGHT
+    const eraseNeutralColor = darkMode ? ERASE_BASE_COLOR_DARK : ERASE_BASE_COLOR_LIGHT
+    const eraseSelectedColor = darkMode ? ERASE_SELECTED_COLOR_DARK : ERASE_SELECTED_COLOR_LIGHT
+
     if (eraseMode) {
-        if (somethingIsSelected) {
-            if (shouldActOnMouseHover) {
-                painter.stroke(pinkBase + random(255 - pinkBase), 0, pinkBase + random(255 - pinkBase)) // pink
-            } else {
-                if (shouldAllShapeBeSelected) {
-                    painter.stroke(random(155) + 100 + pinkBase * 0.4, 0, 0) // red
-                } else {
-                    if (darkMode) {
-                        painter.stroke(random(255 - DARK_PINK_DELTA), 0, random(255 - DARK_PINK_DELTA)) // dark pink
-                    } else {
-                        painter.stroke(171, 188, 219) // a solid magenta that matches the light background
-                    }
-                }
-            }
-        } else {
-            painter.stroke(pinkBase + random(255 - pinkBase), 0, pinkBase + random(255 - pinkBase)) // pink
+        if (shouldAllShapeBeSelected) {
+            applyStroke(painter, eraseSelectedColor)
+            return
         }
+
+        if (somethingIsSelected && shouldActOnMouseHover) {
+            applyStroke(painter, highlightColor)
+            return
+        }
+
+        applyStroke(painter, eraseNeutralColor)
+        return
+    }
+
+    const radius = length(x, y, mouseX, mouseY)
+    if (radius < MOUSE_HOVER_SENSITIVITY) {
+        applyStroke(painter, highlightColor)
     } else {
-        const radius = length(x, y, mouseX, mouseY)
-        if (radius < MOUSE_HOVER_SENSITIVITY) {
-            if (darkMode) {
-                painter.stroke(0, random(255), random(100)) // green
-            } else {
-                const base = random(150)
-                painter.stroke(base, base, base + 155 + random(150 - base)) // blue
-            }
-        } else {
-            painter.stroke(pinkBase + random(255 - pinkBase), 0, pinkBase + random(255 - pinkBase)) // pink
-        }
+        applyStroke(painter, drawBaseColor)
     }
 }
 
@@ -828,7 +839,7 @@ function setAppearanceColors() {
         background(0)
         pinkBase = 0
     } else {
-        background(235, 242, 255)
+        background(255, 190, 215)
         pinkBase = LIGHT_PINK_BASE
     }
 }

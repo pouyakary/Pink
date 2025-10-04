@@ -26,6 +26,7 @@ const BOUNDARY_SENSITIVITY = 8.1;
 
 // MARK: Globals
 
+
 var model = null
 var shouldActOnMouseHover = false
 var eraseMode = false

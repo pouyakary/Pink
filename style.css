@@ -1,250 +1,252 @@
-
 * {
-    box-sizing:             border-box;
-    user-select:            none;
-    -moz-user-select:       none;
-    -webkit-user-select:    none;
-    -ms-user-select:        none;
+  box-sizing: border-box;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
 }
 
-body, html {
-    margin:                 0;
-    padding:                0;
-    overflow:               hidden;
-    background-color:       rgb(235, 242, 255);
-    font-family:            -apple-system, helvetica, arial, sans-serif;
+body,
+html {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: rgb(235, 242, 255);
+  font-family: -apple-system, helvetica, arial, sans-serif;
 }
 
 canvas {
-    display:    block;
+  display: block;
 }
 
 .buttons-bar {
-    position:           absolute;
-    display:            flex;
-    justify-content:    space-between;
-    z-index:            1000;
-    top:                10pt;
-    top:                calc(env(safe-area-inset-top) + 10pt);
-    right:              10pt;
-    right:              calc(env(safe-area-inset-right) + 10pt);
-    width:              fit-content;
+  position: absolute;
+  display: flex;
+  justify-content: space-between;
+  z-index: 1000;
+  top: 10pt;
+  top: calc(env(safe-area-inset-top) + 10pt);
+  right: 10pt;
+  right: calc(env(safe-area-inset-right) + 10pt);
+  width: fit-content;
 }
 
 .bar-button {
-    --button-height:
-        19.5pt;
+  --button-height: 19.5pt;
 
-    font-size:              13pt !important;
-    box-sizing:             border-box;
-    background-color:       rgb(104, 117, 140);
-    color:                  white;
-    border-radius:          var(--button-height);
-    padding:                3pt 9pt 6pt 10pt;
-    height:                 var(--button-height);
-    max-height:             var(--button-height);
-    min-height:             var(--button-height);
-    overflow:               hidden;
-    margin-right:           5pt;
+  font-size: 13pt !important;
+  box-sizing: border-box;
+  background-color: rgb(201, 30, 138);
+  color: rgb(255, 208, 238);
+  border-radius: var(--button-height);
+  padding: 3pt 9pt 6pt 10pt;
+  height: var(--button-height);
+  max-height: var(--button-height);
+  min-height: var(--button-height);
+  overflow: hidden;
+  margin-right: 5pt;
 }
 
 .bar-button.red {
-    background-color:               red !important;
-    color:                          white !important;
-    animation:                      lightAlertAnimation 1s forwards infinite;
-    animation-timing-function:      linear;
+  background-color: red !important;
+  color: white !important;
+  animation: lightAlertAnimation 1s forwards infinite;
+  animation-timing-function: linear;
 }
 
 @keyframes lightAlertAnimation {
-    0% {
-        background-color:       rgb(220, 0, 0);
-    }
-    50% {
-        background-color:       rgb(140, 0, 0);
-    }
-    100% {
-        background-color:       rgb(220, 0, 0);
-    }
+  0% {
+    background-color: rgb(220, 0, 0);
+  }
+  50% {
+    background-color: rgb(140, 0, 0);
+  }
+  100% {
+    background-color: rgb(220, 0, 0);
+  }
 }
 
 @keyframes darkAlertAnimation {
-    from {
-        background-position-x:      0;
-    }
-    to {
-        background-position-x:      var(--button-height);
-    }
+  from {
+    background-position-x: 0;
+  }
+  to {
+    background-position-x: var(--button-height);
+  }
 }
 
 .bar-button:hover {
-    background-color:       black;
-    color:                  white;
-    cursor:                 pointer;
+  background-color: black;
+  color: white;
+  cursor: pointer;
 }
 
-.bar-button:active, .bar-button:focus {
-    background-color:       rgb(78, 78, 78);
+.bar-button:active,
+.bar-button:focus {
+  background-color: rgb(78, 78, 78);
 }
 
 #status {
-    background-color:       inherit;
-    cursor:                 inherit !important;
-    color:                  black;
-    letter-spacing:         1pt;
-    font-size:              9pt !important;
-    padding-top:            4.5pt;
+  background-color: inherit;
+  cursor: inherit !important;
+  color: rgb(160, 24, 110);
+  letter-spacing: 1pt;
+  font-size: 9pt !important;
+  padding-top: 4.5pt;
 }
 
 .drawing-cursor {
-    cursor:     url("pen.svg") 6 3, crosshair !important;
+  cursor: url("pen.svg") 6 3, crosshair !important;
 }
 
 .erasing-cursor {
-    cursor:     url("eraser.svg") 7 6, crosshair !important;
+  cursor: url("eraser.svg") 7 6, crosshair !important;
 }
 
 .pointing-cursor {
-    cursor:     default;
+  cursor: default;
 }
 
 #help-screen {
-    display:                none;
-    background-color:       rgb(104, 117, 140);
-    width:                  100vw;
-    height:                 100vh;
-    z-index:                2000;
-    position:               fixed;
-    left:                   0;
-    top:                    0;
-    overflow:               hidden;
-    color:                  red;
-    cursor:                 pointer;
+  display: none;
+  background-color: rgb(104, 117, 140);
+  width: 100vw;
+  height: 100vh;
+  z-index: 2000;
+  position: fixed;
+  left: 0;
+  top: 0;
+  overflow: hidden;
+  color: red;
+  cursor: pointer;
 }
 
 #help-screen div {
-    margin:             auto;
-    line-height:        1.5;
-    color:              white;
-    padding:            30pt;
-    border-radius:      10pt;
-    max-width:          fit-content;
-    max-height:         fit-content;
+  margin: auto;
+  line-height: 1.5;
+  color: white;
+  padding: 30pt;
+  border-radius: 10pt;
+  max-width: fit-content;
+  max-height: fit-content;
 }
 
 #help-screen a {
-    color:              white;
-    text-decoration:    underline;
+  color: white;
+  text-decoration: underline;
 }
 
 .dialog-container {
-    padding:                20pt;
-    width:                  100vw;
-    background:             white;
-    position:               fixed;
-    z-index:                3000;
-    left:                   0;
-    top:                    0;
-    transition-duration:    0.3s;
-    max-height:             120pt;
-    overflow:               hidden;
+  padding: 20pt;
+  width: 100vw;
+  background: white;
+  position: fixed;
+  z-index: 3000;
+  left: 0;
+  top: 0;
+  transition-duration: 0.3s;
+  max-height: 120pt;
+  overflow: hidden;
 }
 
 .dialog-container.hidden {
-    top:                    -120pt;
-    transition-duration:    0.3s;
+  top: -120pt;
+  transition-duration: 0.3s;
 }
 
 .dialog-box {
-    margin:         auto;
-    max-width:      fit-content;
-    display:        flex;
+  margin: auto;
+  max-width: fit-content;
+  display: flex;
 }
 
 .dialog-emoji {
-    font-size:          2rem;
-    margin-right:       10pt;
-    max-width:          fit-content;
-    flex:               auto;
+  font-size: 2rem;
+  margin-right: 10pt;
+  max-width: fit-content;
+  flex: auto;
 }
 
 .dialog-message-and-buttons {
-    padding-top:    3pt;
+  padding-top: 3pt;
 }
 
 .dialog-message {
-    max-width:          330pt;
-    line-height:        1.5;
-    padding-left:       2pt;
+  max-width: 330pt;
+  line-height: 1.5;
+  padding-left: 2pt;
 }
 
 .dialog-buttons-bar {
-    min-width:      200pt;
-    display:        flex;
-    margin-top:     10pt;
+  min-width: 200pt;
+  display: flex;
+  margin-top: 10pt;
 }
 
 .dialog-button {
-    font-size:              0.9rem;
-    padding:                3pt 11pt 4pt 10pt;
-    background-color:       #eee;
-    border-radius:          30pt;
-    margin-right:           10pt;
-    cursor:                 pointer;
+  font-size: 0.9rem;
+  padding: 3pt 11pt 4pt 10pt;
+  background-color: #eee;
+  border-radius: 30pt;
+  margin-right: 10pt;
+  cursor: pointer;
 }
 
 .dialog-button:hover {
-    background-color:       black;
-    color:                  white;
+  background-color: black;
+  color: white;
 }
 
 @media (prefers-color-scheme: dark) {
-    .bar-button {
-        background-color:       #424242;
-        color:                  white;
-    }
+  .bar-button {
+    background-color: #424242;
+    color: white;
+  }
 
-    #status {
-        color:      white;
-    }
+  #status {
+    color: white;
+  }
 
-    .bar-button:hover {
-        background-color:       #979797;
-        cursor:                 pointer;
-    }
+  .bar-button:hover {
+    background-color: #979797;
+    cursor: pointer;
+  }
 
-    .bar-button:active, .bar-button:focus {
-        background-color:       #636363;
-    }
+  .bar-button:active,
+  .bar-button:focus {
+    background-color: #636363;
+  }
 
-    body, html {
-        background-color:       black;
-    }
+  body,
+  html {
+    background-color: black;
+  }
 
-    .bar-button.red {
-        background-color:               #740000 !important;
-        color:                          #ffe0e0 !important;
-        background-image:               url("erasing.png");
-        background-size:                contain;
-        background-position:            left center;
-        animation:                      darkAlertAnimation 0.5s forwards infinite;
-        animation-timing-function:      linear;
-    }
+  .bar-button.red {
+    background-color: #740000 !important;
+    color: #ffe0e0 !important;
+    background-image: url("erasing.png");
+    background-size: contain;
+    background-position: left center;
+    animation: darkAlertAnimation 0.5s forwards infinite;
+    animation-timing-function: linear;
+  }
 
-    #help-screen {
-        background:     black;
-    }
+  #help-screen {
+    background: black;
+  }
 
-    .dialog-container {
-        background:     #292929;
-        color:          white;
-    }
+  .dialog-container {
+    background: #292929;
+    color: white;
+  }
 
-    .dialog-button {
-        background-color:       #424242;
-    }
+  .dialog-button {
+    background-color: #424242;
+  }
 
-    .dialog-button:hover {
-        background-color:       #eee;
-        color:                  black;
-    }
+  .dialog-button:hover {
+    background-color: #eee;
+    color: black;
+  }
 }
