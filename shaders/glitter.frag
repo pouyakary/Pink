@@ -48,8 +48,8 @@ void main() {
     float sparkle = smoothstep(0.2, 1.0, max(grain, sparkleSeed));
     float highlight = smoothstep(0.5, 1.0, sin(uTime * 9.0 + sparkleSeed * 10.0) * 0.5 + 0.5);
 
-    vec3 sparkleLift = baseColor * (1.0 + sparkle * 0.25) + vec3(0.03) * sparkle;
-    vec3 highlightLift = mix(baseColor, sparkleLift, 0.3 + 0.5 * highlight);
+    vec3 sparkleLift = baseColor * (1.0 + sparkle * 0.4) + vec3(0.03) * sparkle;
+    vec3 highlightLift = mix(baseColor, sparkleLift, 0.2 + 0.5 * highlight);
     float boardGlow = mix(0.08, 0.25, uDarkMode);
     vec3 glow = vec3(boardGlow * sparkleSeed * 0.3);
 
