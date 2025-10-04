@@ -465,6 +465,10 @@ function setup() {
     rebuildMaskFromModel()
 
     registerEvents()
+
+    window.requestAnimationFrame(() => {
+        document.body.classList.remove('loading')
+    })
 }
 
 function registerEvents() {

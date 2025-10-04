@@ -42,16 +42,16 @@ void main() {
     vec3 baseColor = strokeSample.rgb;
 
     vec2 pixelUV = uv * uResolution;
-    float sparkleSeed = hash(floor(pixelUV * 0.2));
-    float twinkle = sin(uTime * 10.0 + sparkleSeed * 10.0);
-    float grain = noise(pixelUV * 1.8 + twinkle);
-    float sparkle = smoothstep(0.2, 1.0, max(grain, sparkleSeed));
-    float highlight = smoothstep(0.5, 1.0, sin(uTime * 9.0 + sparkleSeed * 10.0) * 0.5 + 0.5);
+    float sparkleSeed = hash(floor(pixelUV * 0.1));
+    float twinkle = sin(uTime  + sparkleSeed);
+    float grain = noise(pixelUV * 0.4 + twinkle);
+    float sparkle = smoothstep(0.1, 1.0, max(grain, sparkleSeed));
+    float highlight = smoothstep(0.5, 1.0, sin(uTime * 2.0 + sparkleSeed * 10.0) * 0.5 + 0.5);
 
-    vec3 sparkleLift = baseColor * (1.0 + sparkle * 0.4) + vec3(0.03) * sparkle;
-    vec3 highlightLift = mix(baseColor, sparkleLift, 0.2 + 0.5 * highlight);
-    float boardGlow = mix(0.08, 0.25, uDarkMode);
-    vec3 glow = vec3(boardGlow * sparkleSeed * 0.3);
+    vec3 sparkleLift = baseColor * (1.0 + sparkle * 0.3) + vec3(0.1) * sparkle;
+    vec3 highlightLift = mix(baseColor, sparkleLift, 0.3 + 0.6 * highlight);
+    float boardGlow = mix(0.05, 0.25, uDarkMode);
+    vec3 glow = vec3(boardGlow * sparkleSeed * 0.7);
 
     vec3 color = clamp(highlightLift + glow, 0.0, 1.0);
 

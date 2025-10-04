@@ -11,12 +11,30 @@ html {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background-color: rgb(235, 242, 255);
+  background-color: rgb(255, 190, 215);
   font-family: -apple-system, helvetica, arial, sans-serif;
 }
 
 canvas {
   display: block;
+}
+
+canvas,
+.buttons-bar {
+  opacity: 1;
+  transition: opacity 0.4s ease;
+}
+
+body.loading canvas,
+body.loading .buttons-bar {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#p5_loading,
+#p5_loading *,
+.p5_loading {
+  display: none !important;
 }
 
 .buttons-bar {
