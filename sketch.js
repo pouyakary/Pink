@@ -490,55 +490,80 @@ function initializeGraphicsLayers() {
     scheduleMaskRebuild()
 }
 
-function createColorLayer() {
-    colorLayer = createGraphics(windowWidth, windowHeight)
-    colorLayer.pixelDensity(pixelDensity())
-    colorLayer.clear()
-    configureColorLayer()
-}
-
-function configureColorLayer() {
-    if (!colorLayer) {
+function configureColorLayer(layer = colorLayer) {
+    if (!layer) {
         return
     }
-    colorLayer.colorMode(RGB, 255)
-    colorLayer.strokeWeight(FACTORY_STROKE_SIZE)
-    colorLayer.strokeCap(ROUND)
-    colorLayer.strokeJoin(ROUND)
-    colorLayer.noFill()
+    layer.colorMode(RGB, 255)
+    layer.strokeWeight(FACTORY_STROKE_SIZE)
+    layer.strokeCap(ROUND)
+    layer.strokeJoin(ROUND)
+    layer.noFill()
+}
+
+function configureMaskLayer(layer = maskLayer) {
+    if (!layer) {
+        return
+    }
+    layer.stroke(255)
+    layer.strokeWeight(FACTORY_STROKE_SIZE)
+    layer.strokeCap(ROUND)
+    layer.strokeJoin(ROUND)
+    layer.noFill()
+}
+
+function configureOverlayLayer(layer = overlayLayer) {
+    if (!layer) {
+        return
+    }
+    layer.noFill()
+}
+
+function configureGlitterLayer(layer = glitterLayer) {
+    if (!layer) {
+        return
+    }
+    layer.noStroke()
+    layer.rectMode(CENTER)
+    layer.textureMode(NORMAL)
+}
+
+function ensureGraphicsLayer(existingLayer, renderer, configure) {
+    const targetWidth = windowWidth
+    const targetHeight = windowHeight
+
+    let layer = existingLayer
+
+    if (layer) {
+        layer.resizeCanvas(targetWidth, targetHeight)
+    } else {
+        layer = createGraphics(targetWidth, targetHeight, renderer)
+    }
+
+    layer.pixelDensity(pixelDensity())
+    layer.clear()
+
+    if (configure) {
+        configure(layer)
+    }
+
+    return layer
+}
+
+function createColorLayer() {
+    colorLayer = ensureGraphicsLayer(colorLayer, undefined, configureColorLayer)
 }
 
 function createMaskLayer() {
-    maskLayer = createGraphics(windowWidth, windowHeight)
-    maskLayer.pixelDensity(pixelDensity())
-    maskLayer.clear()
-    configureMaskLayer()
-}
-
-function configureMaskLayer() {
-    if (!maskLayer) {
-        return
-    }
-    maskLayer.stroke(255)
-    maskLayer.strokeWeight(FACTORY_STROKE_SIZE)
-    maskLayer.strokeCap(ROUND)
-    maskLayer.strokeJoin(ROUND)
-    maskLayer.noFill()
+    maskLayer = ensureGraphicsLayer(maskLayer, undefined, configureMaskLayer)
 }
 
 function createOverlayLayer() {
-    overlayLayer = createGraphics(windowWidth, windowHeight)
-    overlayLayer.pixelDensity(pixelDensity())
-    overlayLayer.clear()
-    overlayLayer.noFill()
+    overlayLayer = ensureGraphicsLayer(overlayLayer, undefined, configureOverlayLayer)
 }
 
 function createGlitterLayer() {
-    glitterLayer = createGraphics(windowWidth, windowHeight, WEBGL)
-    glitterLayer.pixelDensity(pixelDensity())
-    glitterLayer.noStroke()
-    glitterLayer.rectMode(CENTER)
-    glitterLayer.textureMode(NORMAL)
+    glitterLayer = ensureGraphicsLayer(glitterLayer, WEBGL, configureGlitterLayer)
 }
 
 function recreateGraphicsLayers() {
@@ -546,6 +571,7 @@ function recreateGraphicsLayers() {
     createMaskLayer()
     createGlitterLayer()
     createOverlayLayer()
+    scheduleMaskRebuild()
     rebuildMaskFromModel()
 }
 
