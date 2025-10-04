@@ -167,43 +167,9 @@ class Shape {
         this.points.pop()
     }
 
-    // MARK: ... Make Lines Even
-
-    makeLinesEven() {
-        if (!this.points || this.points.length === 0) {
-            return
-        }
-
-        const newPoints = []
-        let px = 0
-        let py = 0
-        let isFirst = true
-        for (const [x, y] of this.points) {
-            if (isFirst) {
-                px = x
-                py = y
-                isFirst = false
-                newPoints.push([x, y])
-            } else {
-                if (length(x, y, px, py) > LINE_AVERAGING_SENSITIVITY) {
-                    newPoints.push([x, y])
-                    px = x
-                    py = y
-                }
-            }
-        }
-        const last = this.points.pop()
-        if (last) {
-            newPoints.push(last)
-        }
-        this.points = newPoints
-    }
-
     // MARK: ... Finalize
 
-    finalize() {
-        this.makeLinesEven()
-    }
+    finalize() {}
 }
 
 // ─── Model ─────────────────────────────────────────────────────────────── ✣ ─
@@ -215,10 +181,6 @@ class Model {
         this.shapes = []
 
         this.loadPreviousState()
-
-        if (window.location.search !== "") {
-            this.loadFromModelArray(this.shapes)
-        }
     }
 
     get size() {
@@ -241,36 +203,6 @@ class Model {
         const shape = this.shapes[this.shapes.length - 1]
         shape.append(x, y)
         drawLatestSegmentOnMask(shape)
-    }
-
-    loadFromModelArray(shapes) {
-        function shouldOpen() {
-            return new Promise((resolve) => {
-                if (shapes.length === 0) {
-                    resolve(true)
-                } else {
-                    askForConfirmation({
-                        emoji: "🧨",
-                        message: "Loading the model from this URL will replace your local sketch. Do you want to proceed?",
-                        yes: "Replace Local With Shared Sketch",
-                        no: "Keep Local",
-                    }).then(resolve)
-                }
-            })
-        }
-        return new Promise((resolve) => {
-            try {
-                shouldOpen().then(confirmed => {
-                    if (confirmed) {
-                        const state = JSON.parse(atob(window.location.search.replace("?", "")))
-                        this.loadFromJSON(state)
-                    }
-                    resolve(confirmed)
-                })
-            } catch (error) {
-                resolve(false)
-            }
-        })
     }
 
     loadPreviousState() {
@@ -309,10 +241,6 @@ class Model {
 
     storeCurrentState() {
         storeItem(STORAGE_KEY, this.json)
-    }
-
-    get urlComponent() {
-        return btoa(this.json)
     }
 
     removeLastShape() {
@@ -1045,41 +973,6 @@ function renderOverlay() {
     }
 
     image(overlayLayer, 0, 0, width, height)
-}
-
-//
-// ─── SHARE ──────────────────────────────────────────────────────────────────────
-//
-
-function shareWithURL() {
-    askForConfirmation({
-        emoji: "🎾",
-        message: "Do you want to copy the share url to your clipboard?",
-        yes: "Copy",
-        no: "Stop",
-    }).then(confirmed => {
-        if (confirmed) {
-            const okayButton = document.getElementById("dialog-okay-button")
-            okayButton.setAttribute("data-clipboard-text",
-                "https://pink.pouyakary.org/?" + model.urlComponent
-            )
-
-            const clipboard = new ClipboardJS("#dialog-okay-button")
-
-            clipboard.on('success', event => {
-                event.clearSelection()
-                okayButton.removeAttribute("data-clipboard-text")
-            })
-
-            clipboard.on('error', () => {
-                okayButton.removeAttribute("data-clipboard-text")
-            })
-        }
-    })
-}
-
-function afterEdit() {
-    window.location
 }
 
 //
