@@ -8,7 +8,7 @@
 // MARK: Constants
 
 const FACTORY_STROKE_SIZE = 9;
-const LINE_AVERAGING_SENSITIVITY = 7;
+const LINE_AVERAGING_SENSITIVITY = 0.75;
 const MOUSE_ERASE_SENSITIVITY = LINE_AVERAGING_SENSITIVITY * 1.5;
 const MOUSE_HOVER_SENSITIVITY = 170;
 const STORAGE_KEY = "org.pouyakary.pink.model";
@@ -19,7 +19,7 @@ const SELECTION_BOX_STROKE_WEIGHT = 4;
 const DARK_PINK_DELTA = 130;
 const LIGHT_PINK_BASE = 145;
 const BOUNDARY_SENSITIVITY = 8.1;
-const CURVE_SMOOTHING_STEPS = 4;
+const CURVE_SMOOTHING_STEPS = 2;
 
 const ERASE_BASE_COLOR_LIGHT = [171, 188, 219];
 const ERASE_BASE_COLOR_DARK = [197, 57, 115];
@@ -126,11 +126,34 @@ class Shape {
   // MARK: ... Is Cursor?
 
   get isShapeUnderCursor() {
-    for (const [x, y] of this.points) {
+    const size = this.points.length;
+    if (size === 0) {
+      return false;
+    }
+
+    const mousePoint = [mouseX, mouseY];
+    const sqRadius = MOUSE_ERASE_SENSITIVITY * MOUSE_ERASE_SENSITIVITY;
+
+    let [previousX, previousY] = this.points[0];
+    if (length(previousX, previousY, mouseX, mouseY) < MOUSE_ERASE_SENSITIVITY) {
+      return true;
+    }
+
+    for (let index = 1; index < size; index++) {
+      const [x, y] = this.points[index];
       if (length(x, y, mouseX, mouseY) < MOUSE_ERASE_SENSITIVITY) {
         return true;
       }
+
+      const sqDistance = pointToSegmentDistanceSquared(mousePoint, [previousX, previousY], [x, y]);
+      if (sqDistance < sqRadius) {
+        return true;
+      }
+
+      previousX = x;
+      previousY = y;
     }
+
     return false;
   }
 
@@ -196,10 +219,17 @@ class Shape {
     this.points = smoothed;
   }
 
+  // MARK: ... Optimize
+
+  optimize() {
+    this.points = simplifyPoints(this.points);
+  }
+
   // MARK: ... Finalize
 
   finalize() {
     this.smoothCurve();
+    this.optimize();
   }
 }
 
@@ -270,7 +300,9 @@ class Model {
         }
       }
       if (shapeRAW.length !== 0) {
-        shapes.push(new Shape(shapeRAW));
+        const shape = new Shape(shapeRAW);
+        shape.optimize();
+        shapes.push(shape);
       }
       this.shapes = shapes;
     }
@@ -1049,6 +1081,128 @@ function catmullRomPoint(p0, p1, p2, p3, t) {
   return [x, y];
 }
 
+function dropAdjacentDuplicates(points, tolerance = 0.5) {
+  if (!points || points.length === 0) {
+    return [];
+  }
+
+  const result = [points[0]];
+  const sqTolerance = tolerance * tolerance;
+  let lastPoint = points[0];
+
+  for (let index = 1; index < points.length; index++) {
+    const point = points[index];
+    const dx = point[0] - lastPoint[0];
+    const dy = point[1] - lastPoint[1];
+    if (dx * dx + dy * dy > sqTolerance) {
+      result.push(point);
+      lastPoint = point;
+    }
+  }
+
+  return result;
+}
+
+function pointToSegmentDistanceSquared(point, start, end) {
+  const sx = start[0];
+  const sy = start[1];
+  const ex = end[0];
+  const ey = end[1];
+  const dx = ex - sx;
+  const dy = ey - sy;
+
+  if (dx === 0 && dy === 0) {
+    const diffX = point[0] - sx;
+    const diffY = point[1] - sy;
+    return diffX * diffX + diffY * diffY;
+  }
+
+  const t = ((point[0] - sx) * dx + (point[1] - sy) * dy) / (dx * dx + dy * dy);
+
+  if (t <= 0) {
+    const diffX = point[0] - sx;
+    const diffY = point[1] - sy;
+    return diffX * diffX + diffY * diffY;
+  }
+
+  if (t >= 1) {
+    const diffX = point[0] - ex;
+    const diffY = point[1] - ey;
+    return diffX * diffX + diffY * diffY;
+  }
+
+  const projX = sx + t * dx;
+  const projY = sy + t * dy;
+  const diffX = point[0] - projX;
+  const diffY = point[1] - projY;
+  return diffX * diffX + diffY * diffY;
+}
+
+function simplifyDouglasPeucker(points, sqTolerance) {
+  const lastIndex = points.length - 1;
+  if (lastIndex <= 1) {
+    return points.slice();
+  }
+
+  const markers = new Uint8Array(points.length);
+  const stack = [[0, lastIndex]];
+  const simplified = [];
+  markers[0] = 1;
+  markers[lastIndex] = 1;
+
+  while (stack.length > 0) {
+    const [first, last] = stack.pop();
+    let index = -1;
+    let maxSqDist = 0;
+
+    for (let i = first + 1; i < last; i++) {
+      const sqDist = pointToSegmentDistanceSquared(
+        points[i],
+        points[first],
+        points[last]
+      );
+      if (sqDist > maxSqDist) {
+        index = i;
+        maxSqDist = sqDist;
+      }
+    }
+
+    if (index !== -1 && maxSqDist > sqTolerance) {
+      markers[index] = 1;
+      stack.push([first, index], [index, last]);
+    }
+  }
+
+  for (let i = 0; i < markers.length; i++) {
+    if (markers[i]) {
+      simplified.push(points[i]);
+    }
+  }
+
+  return simplified;
+}
+
+function simplifyPoints(points, tolerance = LINE_AVERAGING_SENSITIVITY) {
+  if (!points || points.length === 0) {
+    return [];
+  }
+
+  if (points.length <= 2) {
+    return points.slice();
+  }
+
+  const deduped = dropAdjacentDuplicates(points, 0.5);
+  if (deduped.length <= 2) {
+    return deduped;
+  }
+
+  const sqTolerance = tolerance * tolerance;
+  const simplified = simplifyDouglasPeucker(deduped, sqTolerance);
+
+  return simplified.length < 2 ? deduped : simplified;
+}
+
+// Reduce redundant points so the stored geometry stays lightweight.
 function isTouchDevice() {
   return (
     "ontouchstart" in window ||
