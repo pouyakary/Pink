@@ -54,7 +54,7 @@ body.loading .buttons-bar {
 
   font-size: 13pt !important;
   box-sizing: border-box;
-  background-color: rgb(201, 30, 138);
+  background-color: #b11e6b;
   color: rgb(255, 208, 238);
   border-radius: var(--button-height);
   padding: 3pt 9pt 6pt 10pt;
@@ -94,8 +94,7 @@ body.loading .buttons-bar {
 }
 
 .bar-button:hover {
-  background-color: black;
-  color: white;
+  filter: brightness(125%);
   cursor: pointer;
 }
 
@@ -104,7 +103,8 @@ body.loading .buttons-bar {
   background-color: rgb(78, 78, 78);
 }
 
-#status {
+#status,
+#status:hover {
   background-color: inherit;
   cursor: inherit !important;
   color: rgb(160, 24, 110);
