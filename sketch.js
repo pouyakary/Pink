@@ -461,6 +461,7 @@ function setup() {
   undoButton = document.getElementById("undo-button");
   resetButton = document.getElementById("reset-button");
   centerButton = document.getElementById("center-button");
+  syncDarkModeWithSystem({ shouldSchedule: false });
   applyLockChangeEffects();
   createCanvas(window.innerWidth, window.innerHeight);
   canvas = document.querySelector("canvas");
@@ -784,13 +785,7 @@ function renderGlitterLayer() {
 }
 
 function draw() {
-  darkMode = isTheSystemOnDarkMode();
-  if (lastKnownDarkMode === null) {
-    lastKnownDarkMode = darkMode;
-  } else if (lastKnownDarkMode !== darkMode) {
-    lastKnownDarkMode = darkMode;
-    scheduleColorLayerRebuild();
-  }
+  syncDarkModeWithSystem();
 
   if (lastKnownEraseMode === null) {
     lastKnownEraseMode = eraseMode;
@@ -1227,6 +1222,41 @@ function isTheSystemOnDarkMode() {
     return query.matches;
   }
   return false;
+}
+
+function syncDarkModeWithSystem({ shouldSchedule = true } = {}) {
+  const prefersDark = isTheSystemOnDarkMode();
+  const modeChanged = lastKnownDarkMode === null || lastKnownDarkMode !== prefersDark;
+
+  if (!modeChanged && shouldSchedule) {
+    return;
+  }
+
+  lastKnownDarkMode = prefersDark;
+  darkMode = prefersDark;
+
+  updateDocumentThemeClass(prefersDark);
+
+  if (shouldSchedule) {
+    scheduleColorLayerRebuild();
+  }
+}
+
+function updateDocumentThemeClass(isDark) {
+  if (typeof document === "undefined") {
+    return;
+  }
+
+  const targets = [document.body, document.documentElement];
+  for (const target of targets) {
+    if (target && target.classList) {
+      target.classList.toggle("dark-mode", Boolean(isDark));
+    }
+  }
+
+  if (document.documentElement) {
+    document.documentElement.style.colorScheme = isDark ? "dark" : "light";
+  }
 }
 
 function loadLockFromState() {
