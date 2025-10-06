@@ -135,7 +135,9 @@ class Shape {
     const sqRadius = MOUSE_ERASE_SENSITIVITY * MOUSE_ERASE_SENSITIVITY;
 
     let [previousX, previousY] = this.points[0];
-    if (length(previousX, previousY, mouseX, mouseY) < MOUSE_ERASE_SENSITIVITY) {
+    if (
+      length(previousX, previousY, mouseX, mouseY) < MOUSE_ERASE_SENSITIVITY
+    ) {
       return true;
     }
 
@@ -145,7 +147,11 @@ class Shape {
         return true;
       }
 
-      const sqDistance = pointToSegmentDistanceSquared(mousePoint, [previousX, previousY], [x, y]);
+      const sqDistance = pointToSegmentDistanceSquared(
+        mousePoint,
+        [previousX, previousY],
+        [x, y]
+      );
       if (sqDistance < sqRadius) {
         return true;
       }
@@ -1007,7 +1013,7 @@ function setAppearanceColors() {
   pinkBase = darkMode ? 0 : LIGHT_PINK_BASE;
 
   if (eraseMode) {
-    background(210, 222, 245);
+    background(157, 171, 196);
   } else if (darkMode) {
     background(0);
   } else {
@@ -1226,7 +1232,8 @@ function isTheSystemOnDarkMode() {
 
 function syncDarkModeWithSystem({ shouldSchedule = true } = {}) {
   const prefersDark = isTheSystemOnDarkMode();
-  const modeChanged = lastKnownDarkMode === null || lastKnownDarkMode !== prefersDark;
+  const modeChanged =
+    lastKnownDarkMode === null || lastKnownDarkMode !== prefersDark;
 
   if (!modeChanged && shouldSchedule) {
     return;

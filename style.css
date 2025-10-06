@@ -268,3 +268,65 @@ body.loading .buttons-bar {
     color: black;
   }
 }
+
+body.dark-mode,
+html.dark-mode {
+  background-color: black;
+}
+
+body.dark-mode .bar-button,
+html.dark-mode .bar-button {
+  background-color: #424242;
+  color: white;
+}
+
+body.dark-mode #status,
+html.dark-mode #status {
+  color: white;
+}
+
+body.dark-mode .bar-button:hover,
+html.dark-mode .bar-button:hover {
+  background-color: #979797;
+  cursor: pointer;
+}
+
+body.dark-mode .bar-button:active,
+body.dark-mode .bar-button:focus,
+html.dark-mode .bar-button:active,
+html.dark-mode .bar-button:focus {
+  background-color: #636363;
+}
+
+body.dark-mode .bar-button.red,
+html.dark-mode .bar-button.red {
+  background-color: #740000 !important;
+  color: #ffe0e0 !important;
+  background-image: url("erasing.png");
+  background-size: contain;
+  background-position: left center;
+  animation: darkAlertAnimation 0.5s forwards infinite;
+  animation-timing-function: linear;
+}
+
+body.dark-mode #help-screen,
+html.dark-mode #help-screen {
+  background: black;
+}
+
+body.dark-mode .dialog-container,
+html.dark-mode .dialog-container {
+  background: #292929;
+  color: white;
+}
+
+body.dark-mode .dialog-button,
+html.dark-mode .dialog-button {
+  background-color: #424242;
+}
+
+body.dark-mode .dialog-button:hover,
+html.dark-mode .dialog-button:hover {
+  background-color: #eee;
+  color: black;
+}
